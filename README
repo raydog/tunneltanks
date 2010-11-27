@@ -1,0 +1,10 @@
+This thing needs a Python interpreter to configure, GNU Make to compile, and the SDL libraries to run, so make sure you have all of those...
+
+To test this thing out, run:
+
+./configure && make && ./tunneltanks
+
+To return the project to it's pristine starting state, run:
+
+make dist-clean
+
