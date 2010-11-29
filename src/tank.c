@@ -109,9 +109,9 @@ void tank_move(Tank *t, TankList *tl) {
 		PublicTankInfo i = {
 			.energy = t->energy,
 			.health = t->health,
-			.x      = base.x,
-			.y      = base.y};
-		t->controller(i, t->controller_data, &t->vx, &t->vy, &t->is_shooting);
+			.x      = t->x - base.x,
+			.y      = t->y - base.y};
+		t->controller(&i, t->controller_data, &t->vx, &t->vy, &t->is_shooting);
 	}
 	
 	/* Calculate the direction: */

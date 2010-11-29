@@ -8,7 +8,7 @@ typedef struct PublicTankInfo {
 } PublicTankInfo;
 
 typedef struct Tank Tank;
-typedef void (*TankController)(PublicTankInfo, void *, Sint8 *, Sint8 *, Uint8 *) ;
+typedef void (*TankController)(PublicTankInfo *, void *, Sint8 *, Sint8 *, Uint8 *) ;
 
 #include <SDL.h>
 #include "level.h"
