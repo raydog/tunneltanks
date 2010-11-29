@@ -170,11 +170,14 @@ BaseCollision level_check_base_collision(Level *lvl, unsigned x, unsigned y, Uin
 	return BASE_COLLISION_NONE;
 }
 
+static void put_pixel_imm(SDL_Surface *s, unsigned x, unsigned y, Uint32 color) {
+	Uint8 *p = &((Uint8*)s->pixels)[ y*s->pitch + x*s->format->BytesPerPixel ];
+	memcpy( p, &color, s->format->BytesPerPixel );
+}
 
 static void put_pixel(SDL_Surface *s, unsigned x, unsigned y, Uint8 r, Uint8 g, Uint8 b) {
 	Uint32 color = SDL_MapRGB( s->format, r, g, b );
-	Uint8 *p = &((Uint8*)s->pixels)[ y*s->pitch + x*s->format->BytesPerPixel ];
-	memcpy( p, &color, s->format->BytesPerPixel );
+	put_pixel_imm(s, x, y, color);
 }
 
 /* Dumps a level into a BMP file: */
@@ -189,14 +192,16 @@ void level_dump_bmp(Level *lvl, char *filename) {
 	for(y=0; y<lvl->height; y++)
 		for(x=0; x<lvl->width; x++) {
 			char val = lvl->array[y*lvl->width + x];
+			unsigned color;
+			
 			switch(val) {
 				case DIRT_HI: put_pixel(s, x, y, 0xc3, 0x79, 0x30); break;
 				case DIRT_LO: put_pixel(s, x, y, 0xba, 0x59, 0x04); break;
 				case ROCK:    put_pixel(s, x, y, 0x9a, 0x9a, 0x9a); break;
 				case BLANK:   put_pixel(s, x, y, 0x00, 0x00, 0x00); break;
 				default:
-					if(val-BASE < MAX_TANKS && val-BASE >= 0)
-						put_pixel(s, x, y, 0xff, 0xff, 0xff); break;
+					if((color=val-BASE) < MAX_TANKS && val-BASE >= 0)
+						put_pixel_imm(s, x, y, color_tank[color][0]); break;
 			}
 		}
 	
