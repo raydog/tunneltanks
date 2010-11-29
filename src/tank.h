@@ -1,8 +1,14 @@
 #ifndef _TANK_H_
 #define _TANK_H_
 
+/* Put inside a structure, so we are protected from casual AI cheating: */
+typedef struct PublicTankInfo {
+	unsigned health, energy;
+	int x, y; /* relative from home base */
+} PublicTankInfo;
+
 typedef struct Tank Tank;
-typedef void (*TankController)(Tank *, void *, Sint8 *, Sint8 *, Uint8 *) ;
+typedef void (*TankController)(PublicTankInfo, void *, Sint8 *, Sint8 *, Uint8 *) ;
 
 #include <SDL.h>
 #include "level.h"
@@ -10,7 +16,6 @@ typedef void (*TankController)(Tank *, void *, Sint8 *, Sint8 *, Uint8 *) ;
 #include "drawbuffer.h"
 #include "projectile.h"
 #include "tanklist.h"
-
 
 Tank *tank_new(Level *lvl, PList *pl, unsigned x, unsigned y, unsigned color) ;
 void tank_destroy(Tank *t) ;

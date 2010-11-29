@@ -104,8 +104,15 @@ void tank_move(Tank *t, TankList *tl) {
 	if(!t->health) return;
 	
 	/* Calculate all of our motion: */
-	if(t->controller)
-		t->controller(t, t->controller_data, &t->vx, &t->vy, &t->is_shooting);
+	if(t->controller) {
+		Vector         base = level_get_spawn(t->lvl, t->color);
+		PublicTankInfo i = {
+			.energy = t->energy,
+			.health = t->health,
+			.x      = base.x,
+			.y      = base.y};
+		t->controller(i, t->controller_data, &t->vx, &t->vy, &t->is_shooting);
+	}
 	
 	/* Calculate the direction: */
 	if(t->vx != 0 || t->vy != 0) {
