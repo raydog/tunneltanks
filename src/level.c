@@ -127,14 +127,6 @@ void level_draw_all(Level *lvl, DrawBuffer *b) {
 		}
 }
 
-/* TODO: Find out if this is even used anymore... */
-void level_draw_box(Level *lvl, DrawBuffer *b, SDL_Rect r) {
-	register unsigned x, y;
-		
-	for(y=r.y; y<r.h+r.y; y++)
-		for(x=r.x; x<r.w+r.x; x++)
-			level_draw_pixel(lvl, b, x, y);
-}
 
 void level_draw_pixel(Level *lvl, DrawBuffer *b, unsigned x, unsigned y) {
 	unsigned color;
