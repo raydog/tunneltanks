@@ -79,8 +79,16 @@ Uint8 tank_get_color(Tank *t) {
 
 /* We don't use the Tank structure in this function, since we are checking the
  * tank's hypothetical position... ie: IF we were here, would we collide? */
-static int tank_collision(Level *lvl, unsigned dir, unsigned x, unsigned y, TankList *tl, unsigned id) {
+
+typedef enum CollisionType {
+	CT_NONE,    /* All's clear! */
+	CT_DIRT,    /* We hit dirt, but that's it. */
+	CT_COLLIDE  /* Hit a rock/base/tank/something we can't drive over. */
+} CollisionType;
+
+static CollisionType tank_collision(Level *lvl, unsigned dir, unsigned x, unsigned y, TankList *tl, unsigned id) {
 	int tx, ty;
+	CollisionType out = CT_NONE;
 	
 	/* Level Collisions: */
 	for(ty=-3; ty<=3; ty++)
@@ -89,12 +97,15 @@ static int tank_collision(Level *lvl, unsigned dir, unsigned x, unsigned y, Tank
 			if(!c) continue;
 			
 			c = level_get(lvl, x+tx, y+ty);
-			if(c!=DIRT_HI && c!=DIRT_LO && c!=BLANK) return 1;
+			
+			if(c==DIRT_HI || c==DIRT_LO) out = CT_DIRT;
+			
+			if(c!=DIRT_HI && c!=DIRT_LO && c!=BLANK) return CT_COLLIDE;
 		}
 	
 	/* Tank collisions: */
-	if(tanklist_check_collision(tl, (Vector){x,y}, dir, id)) return 1;
-	return 0;
+	if(tanklist_check_collision(tl, (Vector){x,y}, dir, id)) return CT_COLLIDE;
+	return out;
 }
 
 void tank_move(Tank *t, TankList *tl) {
@@ -116,13 +127,22 @@ void tank_move(Tank *t, TankList *tl) {
 	
 	/* Calculate the direction: */
 	if(t->vx != 0 || t->vy != 0) {
+		CollisionType ct;
+		
 		newdir = (t->vx+1) + (t->vy+1)*3;
 		
+		ct = tank_collision(t->lvl, newdir, t->x+t->vx, t->y+t->vy, tl, t->color);
 		/* Now, is there room to move forward in that direction? */
-		if(!tank_collision(t->lvl, newdir, t->x+t->vx, t->y+t->vy, tl, t->color)) {
+		if( ct != CT_COLLIDE ) {
 			
 			/* If so, then we can move: */
-			if(!level_dig_hole(t->lvl, t->x+t->vx, t->y+t->vy) || t->is_shooting) {
+			if( ct == CT_DIRT ) {
+				level_dig_hole(t->lvl, t->x+t->vx, t->y+t->vy);
+				if(t->is_shooting) goto shooting_speedup;
+			
+			} else {
+				
+shooting_speedup:				
 				/* We will only move/rotate if we were able to get here without
 				 * digging, so we can avoid certain bizarre bugs: */
 				t->direction = newdir;
