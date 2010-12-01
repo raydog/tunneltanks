@@ -1,4 +1,5 @@
-This thing needs a CMake to configure, GNU Make to compile, and the SDL libraries to run, so make sure you have all of those...
+This thing needs a CMake to configure, GNU Make to compile, and the SDL
+libraries to run, so make sure you have all of those...
 
 To test this thing out, cd into this directory, and run:
 
@@ -6,6 +7,7 @@ cmake . && make && ./src/tunneltanks
 
 To return the project to it's pristine starting state, run:
 
-./dist-clean.sh
+sudo ./dist-clean.sh
 
-If you make any neat modifications (new level generator, new ai, bug fixes, etc) feel free to mail patches to me: Raymond Myers at 'ray [at] poweredbytoast [dot] com'. A more elegant solution (ie, a code repository) will be coming soon...
+If you make any neat modifications (new level generator, new ai, bug fixes, etc)
+feel free to mail patches to me at 'ray [AT] poweredbytoast [DOT] com'.

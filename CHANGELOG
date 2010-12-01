@@ -1,0 +1,33 @@
+v0.4:
+ - Switched to a CMake/CPack-based build/packaging system.
+ - Improved Twitch's self-preservation instincts.
+ - All code is now managed by the Bazaar VCS.
+
+v0.3:
+ - Energy and health is now managed by game engine. Tanks can now die.
+ - Bases added, which can heal and/or recharge your tank.
+ - Displays now draw static when a tank is low on power.
+ - All tanks now have their own colors.
+ - Various code clean-ups, bug fixes, and optimizations.
+
+v0.2:
+ - Significant code cleanup.
+ - Now supports 8 tanks on the same map.
+ - Added the first version of the Twitch AI.
+ - Shooting while digging speeds you up.
+ - Controller code abstracted into a cleaner API.
+ - Numerous bug fixes and optimizations.
+
+v0.1:
+ - Better graphic system, which allows for creating viewing panes anywhere in
+   the window, centered on arbitrary tanks.
+ - Digging in dirt now takes longer than driving out in the open.
+ - Beginnings of collision detection.
+ - Added ability to shoot.
+
+v0.0.1:
+ - Initial version.
+ - Decent level generator.
+ - Beginnings of a graphic system.
+ - Tanks, but no collision detection.
+

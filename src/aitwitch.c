@@ -28,8 +28,9 @@ typedef struct TwitchPrivateData {
 	TwitchMode mode;
 } TwitchPrivateData;
 
-/* TODO: Needs logic to protect our twitch in case one of the doors is blocked
- *       by rock. */
+
+/* TODO: We need a way to query the level for rock, and this method needs to be
+ *       sure that the controller/ai can't see further than a window... */
 static void do_exit_up(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s) {
 	TwitchPrivateData *data = d;
 	
