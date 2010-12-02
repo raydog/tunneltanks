@@ -297,7 +297,7 @@ Screen *screen_new(int is_fullscreen) {
 	
 	out->is_fullscreen = is_fullscreen;
 	out->mode = SCREEN_DRAW_INVALID;
-	out->window_count = 0;
+	out->window_count = out->status_count = out->bitmap_count = 0;
 	
 	/* Set the window size to the default one: */
 	if( screen_resize(out, SCREEN_WIDTH, SCREEN_HEIGHT) ) {
