@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include <time.h>
 #include <SDL.h>
 #include "screen.h"
@@ -31,7 +32,7 @@ void smart_delay() {
 }
 
 
-void main_loop(Screen *s) {
+void main_loop(Screen *s, char *id) {
 	Level *lvl;
 	unsigned frames = 0;
 	time_t tiempo, newtiempo;
@@ -48,7 +49,7 @@ void main_loop(Screen *s) {
 	tl  = tanklist_new(lvl, pl);
 	
 	/* Generate our random level: */
-	generate_level(lvl, "toast");
+	generate_level(lvl, id);
 	level_decorate(lvl);
 	level_make_bases(lvl);
 	level_dump_bmp(lvl, "debug_start.bmp");
@@ -155,11 +156,36 @@ void main_loop(Screen *s) {
 int main(int argc, char *argv[]) {
 	char text[1024];
 	Screen *s;
+	unsigned i, is_reading_level=0, is_reading_seed=0;
+	char *id = NULL;
+	int seed = 0, manual_seed=0;
 	
-	if(argc == 1)
-		rand_seed();
-	else
-		srand(atoi(argv[1]));
+	/* Iterate through the CLAs: */
+	for(i=1; i<argc; i++) {
+		if(is_reading_level) {
+			id = argv[i];
+			is_reading_level = 0;
+		
+		} else if(is_reading_seed) {
+			seed = atoi(argv[i]);
+			manual_seed = 1;
+			is_reading_seed = 0;
+		
+		} else if( !strcmp("--level", argv[i]) ) {
+			is_reading_level = 1;
+		
+		} else if( !strcmp("--seed", argv[i]) ) {
+			is_reading_seed = 1;
+		
+		} else {
+			fprintf(stderr, "Unexpected argument: '%s'\n", argv[i]);
+			exit(1);
+		}
+	}
+	
+	/* Seed if necessary: */
+	if(manual_seed) srand(seed);
+	else            rand_seed();
 	
 	if(SDL_Init(SDL_INIT_EVERYTHING)<0) {
 		printf("Failed to initialize SDL: %s\n", SDL_GetError());
@@ -173,7 +199,7 @@ int main(int argc, char *argv[]) {
 	SDL_VideoDriverName( text, sizeof(text) );
 	printf("Using video driver: %s\n", text);
 	
-	main_loop(s);
+	main_loop(s, id);
 	
 	screen_destroy(s);
 	
