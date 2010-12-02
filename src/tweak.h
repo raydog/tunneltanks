@@ -32,7 +32,7 @@
 
 /* The minimum distance between two tanks in the world. If this is set too high,
  * then the level generator may start throwing exceptions: */
-#define MIN_SPAWN_DIST                 100
+#define MIN_SPAWN_DIST                 150
 
 /* The number of frames to wait in between shots: */
 #define TANK_BULLET_DELAY              3
