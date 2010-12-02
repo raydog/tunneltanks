@@ -2,6 +2,8 @@ v0.4:
  - Switched to a CMake/CPack-based build/packaging system.
  - Improved Twitch's self-preservation instincts.
  - All code is now managed by the Bazaar VCS.
+ - Changed digging behavior to be more like the original game.
+ - Made it possible for there to be more than one level generator.
 
 v0.3:
  - Energy and health is now managed by game engine. Tanks can now die.
