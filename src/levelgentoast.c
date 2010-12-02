@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "cavegen.h"
+#include "levelgen.h"
 #include "level.h"
 #include "memalloc.h"
 #include "random.h"
@@ -351,7 +351,7 @@ static void smooth_cavern(Level *lvl) {
 #define TIMER_STOP(t) \
 	printf("%.2lf sec\n", ((double)(clock()-(t)))/CLOCKS_PER_SEC)
 	
-void gen_level(Level *lvl) {
+void toast_generator(Level *lvl) {
 	clock_t t;
 	
 	TIMER_START(t);

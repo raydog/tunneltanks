@@ -5,7 +5,7 @@
 #include "tweak.h"
 #include "memalloc.h"
 #include "level.h"
-#include "cavegen.h"
+#include "levelgen.h"
 #include "random.h"
 #include "drawbuffer.h"
 #include "projectile.h"
@@ -48,7 +48,7 @@ void main_loop(Screen *s) {
 	tl  = tanklist_new(lvl, pl);
 	
 	/* Generate our random level: */
-	gen_level(lvl);
+	generate_level(lvl, "toast");
 	level_decorate(lvl);
 	level_make_bases(lvl);
 	level_dump_bmp(lvl, "debug_start.bmp");
