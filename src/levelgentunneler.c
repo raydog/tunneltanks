@@ -1,40 +1,33 @@
 #include "level.h"
 #include "levelgentunneler.h"
+#include "levelgenutil.h"
 #include "random.h"
 
 #include "level_defn.h"
 
-#define BORDER    30
+#define BORDER    80
 
-static Vector pt_rand(unsigned w, unsigned h) {
-	Vector out;
-	out.x = rand_int(BORDER, w - BORDER);
-	out.y = rand_int(BORDER, h - BORDER);
-	return out;
+#define SIDE_STEP_MIN  3
+#define SIDE_SPEP_MAX  6
+
+#define UP_STEP_MIN    6
+#define UP_STEP_MAX    12
+
+/*
+static void add_rock(Level *lvl) {
+
 }
-
-static unsigned pt_dist(Vector a, Vector b) {
-	return (a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y);
-}
-
-static void fill_all(Level *lvl, char c) {
-	register unsigned i;
-	
-	for(i=0; i<lvl->width * lvl->height; i++) {
-		lvl->array[i] = c;
-	}
-}
-
+*/
 static void add_spawns(Level *lvl) {
 	unsigned i, j;
 	
-	lvl->spawn[0] = pt_rand(lvl->width, lvl->height);
+	lvl->spawn[0] = pt_rand(lvl->width, lvl->height, BORDER);
 	
 	for(i=1; i<MAX_TANKS; i++) {
 		int done = 0;
 		while(!done) {
 			/* Try adding a new point: */
-			lvl->spawn[i] = pt_rand(lvl->width, lvl->height);
+			lvl->spawn[i] = pt_rand(lvl->width, lvl->height, BORDER);
 			
 			/* Make sure that point isn't too close to others: */
 			for(j=0; j<i; j++) {
