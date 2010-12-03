@@ -1,23 +1,55 @@
+#include <stdio.h>
 #include "level.h"
 #include "levelgentunneler.h"
 #include "levelgenutil.h"
 #include "random.h"
+#include "types.h"
 
 #include "level_defn.h"
 
-#define BORDER    80
 
-#define SIDE_STEP_MIN  3
-#define SIDE_SPEP_MAX  6
+/* TODO: This generator uses floats, so we'll need to optimize that... */
 
-#define UP_STEP_MIN    6
-#define UP_STEP_MAX    12
+#define BORDER         80
 
-/*
-static void add_rock(Level *lvl) {
+#define MAX_SLOPE      2.0
+#define MAX_DIVISIONS  100
 
+
+/* Inserts a point into an array, sorted by x value. Returns index of pt, or -1
+ * on a failed insertion: */
+static int insert_point(Vector *buf, unsigned *index, Vector pt) {
+	int i;
+	
+	/* Instert the point: */
+	buf[(*index)++] = pt;
+	
+	/* Shuffle it into place: */
+	for(i = *index - 1; i > 0 && buf[i-1].x > buf[i].x; i--) {
+		Vector temp = buf[i-1];
+		buf[i-1] = buf[i];
+		buf[i] = temp;
+	}
+	
+	return i;
 }
-*/
+
+/* This just adds random points for now: */
+static void add_rock(Level *lvl) {
+	Vector   buf[MAX_DIVISIONS];
+	unsigned i, buf_index = 0;
+	
+	for(i=0; i<MAX_DIVISIONS-2; i++) {
+		Vector t = pt_rand(lvl->width, BORDER, 0);
+		insert_point(buf, &buf_index, t);
+	}
+	
+	for(i=0; i<buf_index; i++) {
+		printf("(%u, %u)\n", buf[i].x, buf[i].y);
+	}
+}
+
+
 static void add_spawns(Level *lvl) {
 	unsigned i, j;
 	
@@ -43,6 +75,7 @@ static void add_spawns(Level *lvl) {
 
 void tunneler_generator(Level *lvl) {
 	fill_all(lvl, 0);
+	add_rock(lvl);
 	add_spawns(lvl);
 }
 

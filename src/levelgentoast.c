@@ -254,23 +254,10 @@ static void smooth_cavern(Level *lvl) {
  * MAIN FUNCTIONS:                                                            *
  *----------------------------------------------------------------------------*/
 
-#define TIMER_START(t) \
-	(t) = clock()
-
-#define TIMER_STOP(t) \
-	printf("%.2lf sec\n", ((double)(clock()-(t)))/CLOCKS_PER_SEC)
-	
 void toast_generator(Level *lvl) {
-	clock_t t;
-	
-	TIMER_START(t);
-	
 	generate_tree(lvl);
 	randomly_expand(lvl);
 	smooth_cavern(lvl);
-	
-	printf("Level generated in: ");
-	TIMER_STOP(t);
 }
 
 #ifdef _TESTING
