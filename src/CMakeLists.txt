@@ -30,22 +30,24 @@ set(CPACK_GENERATOR "TBZ2" "DEB")
 
 # General settings:
 set(CPACK_PACKAGE_VENDOR "Raymond Myers <ray@poweredbytoast.com>")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A Tunneler re-implementation, written with SDL. hunh")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A Tunneler re-implementation, written with SDL.")
+set(CPACK_PACKAGE_DESCRIPTION_FILE ${PROJECT_SOURCE_DIR}/pack/project_desc)
 set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
 set(CPACK_PACKAGE_VERSION_MINOR "4")
 set(CPACK_PACKAGE_VERSION_PATCH "0")
 set(CPACK_STRIP_FILES true)
 
-
 # Stuff needed by the deb packager: (The version numbrs are guessed...)
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3), libsdl1.2debian (>= 1.2.7)")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER ${CPACK_PACKAGE_VENDOR})
 set(CPACK_DEBIAN_PACKAGE_SECTION "games")
-include("${PROJECT_SOURCE_DIR}/pack/project_desc")
+file(READ ${PROJECT_SOURCE_DIR}/pack/project_desc CPACK_DEBIAN_PACKAGE_DESCRIPTION)
 
 # Stuff needed by the rpm packager:
-# I'll get on this once I have a fedora OS in a VM...
+set(CPACK_RPM_PACKAGE_LICENSE  "GPLv3")
+set(CPACK_RPM_PACKAGE_GROUP    "Amusements/Games")
+set(CPACK_RPM_PACKAGE_REQUIRES "SDL >= 1.2.7")
 
 include(CPack)
 
