@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 2.6)
 
+# Needed for the File IO
+SET(cat_prog cat)
+
 find_package( SDL REQUIRED )
 include_directories( ${SDL_INCLUDE_DIR} )
 
@@ -27,8 +30,7 @@ set(CPACK_GENERATOR "TBZ2" "DEB")
 
 # General settings:
 set(CPACK_PACKAGE_VENDOR "Raymond Myers <ray@poweredbytoast.com>")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A Tunneler re-implementation, written with SDL.")
-set(CPACK_PACKAGE_DESCRIPTION_FILE "${PROJECT_SOURCE_DIR}/pack/project_desc")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "A Tunneler re-implementation, written with SDL. hunh")
 set(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/LICENSE")
 set(CPACK_PACKAGE_VERSION_MAJOR "0")
 set(CPACK_PACKAGE_VERSION_MINOR "4")
@@ -40,6 +42,7 @@ set(CPACK_STRIP_FILES true)
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.3), libsdl1.2debian (>= 1.2.7)")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER ${CPACK_PACKAGE_VENDOR})
 set(CPACK_DEBIAN_PACKAGE_SECTION "games")
+include("${PROJECT_SOURCE_DIR}/pack/project_desc")
 
 # Stuff needed by the rpm packager:
 # I'll get on this once I have a fedora OS in a VM...
