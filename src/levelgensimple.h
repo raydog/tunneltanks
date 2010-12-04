@@ -3,7 +3,7 @@
 
 #include "level.h"
 
-void tunneler_generator(Level *lvl) ;
+void simple_generator(Level *lvl) ;
 
 #endif /* _LEVEL_GEN_TUNNELER_H_ */
 

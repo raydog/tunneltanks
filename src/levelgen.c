@@ -14,13 +14,13 @@ typedef struct LevelGenerator {
 /* === All the generator headers go here: =================================== */
 
 #include "levelgentoast.h"
-#include "levelgentunneler.h"
+#include "levelgensimple.h"
 
 /* Add an entry for every generator: */
 LevelGenerator GENERATOR_LIST[] =
 {
-	LEVEL_GENERATOR("toast",    toast_generator),
-	LEVEL_GENERATOR("tunneler", tunneler_generator),
+	LEVEL_GENERATOR("toast",  toast_generator),
+	LEVEL_GENERATOR("simple", simple_generator),
 	
 	/* This needs to be the last item in the list: */
 	LEVEL_GENERATOR(NULL, NULL)

@@ -97,7 +97,7 @@ static void generate_tree(Level *lvl) {
 		 * drawing them, and merging the two sets: */
 		j+=1;
 		for(k=0; k<TREESIZE; k++) if(dsets[k] == bset) dsets[k] = aset;
-		draw_line(lvl, points[pairs[i].a], points[pairs[i].b], 0);
+		draw_line(lvl, points[pairs[i].a], points[pairs[i].b], 0, 0);
 	}
 	
 	/* We don't need this data anymore: */

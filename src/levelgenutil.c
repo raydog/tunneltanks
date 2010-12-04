@@ -37,14 +37,23 @@ void set_circle(char *a, unsigned w, unsigned x, unsigned y, char value) {
 	}
 }
 
+/* Used for point drawing: */
+static void set_point(char *a, unsigned w, unsigned x, unsigned y, char value) {
+	a[y*w+x] = value;
+}
+
 #define SWAP(type,a,b) do { type t = (a); (a)=(b); (b)=t; } while(0)
 
 /* New Bresenham's Algorithm-based function: */
 
-void draw_line(Level *dest, Vector a, Vector b, char value) {
+void draw_line(Level *dest, Vector a, Vector b, char value, int fat_line) {
 	int swap, dx, dy, error, stepy;
 	register unsigned x, y;
-
+	void (*pt_func)(char *, unsigned, unsigned, unsigned, char) ;
+	
+	/* How is this thing getting drawn? */
+	pt_func = (fat_line) ? set_circle : set_point;
+	
 	/* Swap x and y values when the graph gets too steep to operate normally: */
 	if((swap = abs(b.y - a.y) > abs(b.x - a.x))) {
 		SWAP(unsigned, a.x, a.y);
@@ -62,8 +71,8 @@ void draw_line(Level *dest, Vector a, Vector b, char value) {
 	
 	/* Now, for every x from a.x to b.x, add the correct dot: */
 	for (x = a.x, y=a.y; x <= b.x; x++) {
-		if(swap) set_circle(dest->array, dest->width, y, x, value);
-		else     set_circle(dest->array, dest->width, x, y, value);
+		if(swap) pt_func(dest->array, dest->width, y, x, value);
+		else     pt_func(dest->array, dest->width, x, y, value);
 
 		error -= dy;
 		if(error < 0) {
