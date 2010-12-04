@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
 
-project(tunneltanks)
+project(tunneltanks C)
 add_subdirectory(src)
 
