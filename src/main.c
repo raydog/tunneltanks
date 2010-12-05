@@ -232,14 +232,14 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	
-	/* Seed if necessary: */
-	if(manual_seed) srand(seed);
-	else            rand_seed();
-	
 	if(SDL_Init(SDL_INIT_EVERYTHING)<0) {
 		printf("Failed to initialize SDL: %s\n", SDL_GetError());
 		return 1;
 	}
+	
+	/* Seed if necessary: */
+	if(manual_seed) srand(seed);
+	else            rand_seed();
 	
 	/* New windowed screen: */
 	s = screen_new(fullscreen);

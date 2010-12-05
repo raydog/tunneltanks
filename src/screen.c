@@ -1,4 +1,5 @@
 #include <SDL.h>
+#include <math.h>
 #include "screen.h"
 #include "tweak.h"
 #include "memalloc.h"
@@ -327,10 +328,37 @@ void screen_set_fullscreen(Screen *s, int is_fullscreen) {
 	else               screen_resize(s, s->width, s->height);
 }
 
+
+/* Will select the best resolution based on total number of pixels: */
+static SDL_Rect screen_get_best_resolution() {
+	SDL_Rect** modes;
+	unsigned i;
+	SDL_Rect out = {0,0,0,0};
+	unsigned out_score = 0;
+	
+	modes = SDL_ListModes(NULL, SDL_OPTIONS_FS);
+	if(!modes) return out;
+	
+	/* Are all resolutions available? */
+	if (modes == (SDL_Rect**)-1) {
+		out.w = SCREEN_WIDTH; out.h = SCREEN_HEIGHT;
+		return out;
+	}
+	
+	for (i=1; modes[i]; i++) {
+		if(modes[i]->w * modes[i]->h > out_score) {
+			out = *modes[i];
+			out_score = out.w * out.h;
+		}
+	}
+	
+	return out;
+}
+
 /* Returns 0 if successful, 1 if failed: */
 int screen_resize(Screen *s, unsigned width, unsigned height) {
 	unsigned pixelw, pixelh, xskips, yskips, xstart, ystart, vw, vh, a, b;
-	unsigned fullscreen = 0;
+	unsigned flags = SDL_OPTIONS;
 	
 	SDL_Surface *newsurface;
 	
@@ -340,12 +368,13 @@ int screen_resize(Screen *s, unsigned width, unsigned height) {
 	
 	/* A little extra logic for fullscreen: */
 	if(s->is_fullscreen) {
-		fullscreen = SDL_FULLSCREEN;
-		width = height = 0;
+		SDL_Rect r = screen_get_best_resolution();
+		flags = SDL_OPTIONS_FS;
+		width = r.w; height = r.h;
 	}
 	
 	/* Now, let's try to actually resize this thing: */
-	if( !(newsurface = SDL_SetVideoMode(width, height, 0, SDL_OPTIONS | fullscreen)) ) {
+	if( !(newsurface = SDL_SetVideoMode(width, height, 0, flags)) ) {
 		fprintf(stderr, "Failed to set video mode: %s\n", SDL_GetError());
 		return 1;
 	}
