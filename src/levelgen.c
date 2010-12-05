@@ -29,15 +29,13 @@ LevelGenerator GENERATOR_LIST[] =
 
 /* ========================================================================== */
 
-
-/* TODO: Stop using floats in this: */
-
 #define TIMER_START(t) \
 	(t) = clock()
 
-#define TIMER_STOP(t) \
-	printf("%.2lf sec\n", ((double)(clock()-(t)))/CLOCKS_PER_SEC)
-
+#define TIMER_STOP(t) do { \
+	unsigned temp = ((clock() - (t)) * 100) / CLOCKS_PER_SEC; \
+	printf("%u.%02u sec\n", temp/100, temp%100); \
+} while(0)
 
 /* Linear search is ok here, cause this function should be rarely called, and
  * there aren't many level generators: */
