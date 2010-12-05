@@ -314,17 +314,49 @@ void screen_destroy(Screen *s) {
 }
 
 void screen_set_fullscreen(Screen *s, int is_fullscreen) {
-	/* TODO: this. */
+	
+	if(s->is_fullscreen == is_fullscreen) return;
+	
+	/* -1 will toggle: */
+	if(is_fullscreen < 0) is_fullscreen = !s->is_fullscreen;
+	
+	s->is_fullscreen = is_fullscreen;
+	
+	/* Resize the screen to include the new fullscreen mode: */
+	if(!is_fullscreen) screen_resize(s, SCREEN_WIDTH, SCREEN_HEIGHT);
+	else               screen_resize(s, s->width, s->height);
 }
 
 /* Returns 0 if successful, 1 if failed: */
 int screen_resize(Screen *s, unsigned width, unsigned height) {
 	unsigned pixelw, pixelh, xskips, yskips, xstart, ystart, vw, vh, a, b;
+	unsigned fullscreen = 0;
+	
 	SDL_Surface *newsurface;
 	
 	/* Make sure that we aren't scaling to something too small: */
 	if(width < GAME_WIDTH)   width = GAME_WIDTH;
 	if(height < GAME_HEIGHT) height = GAME_HEIGHT;
+	
+	/* A little extra logic for fullscreen: */
+	if(s->is_fullscreen) {
+		fullscreen = SDL_FULLSCREEN;
+		width = height = 0;
+	}
+	
+	/* Now, let's try to actually resize this thing: */
+	if( !(newsurface = SDL_SetVideoMode(width, height, 0, SDL_OPTIONS | fullscreen)) ) {
+		fprintf(stderr, "Failed to set video mode: %s\n", SDL_GetError());
+		return 1;
+	}
+	
+	/* If this was fullscreen, we need to check what the new resolution is: */
+	if(s->is_fullscreen) {
+		width = newsurface->w; height = newsurface->h;
+		/* Just to make sure we don't get out-of-sync with the fullscreen stuff,
+		 * we will copy in the current fullscreen status from the surface: */
+		s->is_fullscreen = !!(newsurface->flags & SDL_FULLSCREEN);
+	}
 	
 	/* What is the limiting factor in our scaling? */
 	a = height * GAME_WIDTH; b = width * GAME_HEIGHT;
@@ -342,12 +374,6 @@ int screen_resize(Screen *s, unsigned width, unsigned height) {
 	pixelw = vw / GAME_WIDTH;  xskips = vw % GAME_WIDTH;
 	pixelh = vh / GAME_HEIGHT; yskips = vh % GAME_HEIGHT;
 	
-	/* Now, let's try to actually resize this thing: */
-	if( !(newsurface = SDL_SetVideoMode(width, height, 0, SDL_OPTIONS)) ) {
-		fprintf(stderr, "Failed to set video mode: %s\n", SDL_GetError());
-		return 1;
-	}
-	
 	/* Setup our colors, and draw a nice bg: */
 	drawbuffer_refresh_colors();
 	fill_background(newsurface);
@@ -359,7 +385,10 @@ int screen_resize(Screen *s, unsigned width, unsigned height) {
 	s->pixelw = pixelw; s->pixelh = pixelh;
 	s->xskips = xskips; s->yskips = yskips;
 	
-	/* Draw a test pattern: */
+	/* Disable the mouse in fullscreen, otherwise enable: */
+	SDL_ShowCursor( s->is_fullscreen ? SDL_DISABLE : SDL_ENABLE );
+	
+	/* Draw: */
 	screen_draw(s);
 	return 0;
 }

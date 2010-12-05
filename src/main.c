@@ -110,9 +110,19 @@ void main_loop(Screen *s, char *id) {
 					screen_resize(s, e.resize.w, e.resize.h);
 					break;
 				
+				/* We handle a couple of keys: */
+				case SDL_KEYDOWN:
+					if(e.key.keysym.sym == SDLK_F10) {
+						/* F10 will toggle fullscreen: */
+						screen_set_fullscreen(s, -1);
+						break;
+						
+					} else if(e.key.keysym.sym != SDLK_ESCAPE) break;
+					
+					/* This way, SDLK_ESCAPE will fall through to... */
+					
 				/* Program is trying to exit: */
 				case SDL_QUIT:
-					
 					if(__DEBUG_DUMP_BITMAPS)
 						level_dump_bmp(lvl, "debug_end.bmp");
 					
@@ -166,7 +176,7 @@ void main_loop(Screen *s, char *id) {
 int main(int argc, char *argv[]) {
 	char text[1024];
 	Screen *s;
-	unsigned i, is_reading_level=0, is_reading_seed=0;
+	unsigned i, is_reading_level=0, is_reading_seed=0, fullscreen=0;
 	char *id = NULL;
 	int seed = 0, manual_seed=0;
 	
@@ -190,6 +200,7 @@ int main(int argc, char *argv[]) {
 			printf("--show-levels  List all available level generators.\n");
 			printf("--level <GEN>  Use <GEN> as the level generator.\n");
 			printf("--seed <INT>   Use <INT> as the random seed.\n");
+			printf("--fullscreen   Start in fullscreen mode.\n\n");
 			
 			printf("--debug        Write before/after bitmaps of level to current directory.\n");
 			
@@ -212,6 +223,9 @@ int main(int argc, char *argv[]) {
 		} else if( !strcmp("--debug", argv[i]) ) {
 			__DEBUG_DUMP_BITMAPS = 1;
 		
+		} else if( !strcmp("--fullscreen", argv[i]) ) {
+			fullscreen = 1;
+		
 		} else {
 			fprintf(stderr, "Unexpected argument: '%s'\n", argv[i]);
 			exit(1);
@@ -228,7 +242,7 @@ int main(int argc, char *argv[]) {
 	}
 	
 	/* New windowed screen: */
-	s = screen_new(0);
+	s = screen_new(fullscreen);
 	
 	/* Dump out the current graphics driver, just for kicks: */
 	SDL_VideoDriverName( text, sizeof(text) );
