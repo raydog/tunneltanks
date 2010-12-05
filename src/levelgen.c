@@ -7,8 +7,9 @@
 typedef struct LevelGenerator {
 	char              *id;
 	LevelGeneratorFunc gen;
+	char              *desc;
 } LevelGenerator;
-#define LEVEL_GENERATOR(id, gen) ((LevelGenerator){(id), (gen)})
+#define LEVEL_GENERATOR(id, gen, desc) ((LevelGenerator){(id), (gen), (desc)})
 
 
 /* === All the generator headers go here: =================================== */
@@ -19,11 +20,11 @@ typedef struct LevelGenerator {
 /* Add an entry for every generator: */
 LevelGenerator GENERATOR_LIST[] =
 {
-	LEVEL_GENERATOR("toast",  toast_generator),
-	LEVEL_GENERATOR("simple", simple_generator),
+	LEVEL_GENERATOR("toast",  toast_generator,  "Twisty, cavernous maps." ),
+	LEVEL_GENERATOR("simple", simple_generator, "Simple rectangular maps with ragged sides."),
 	
 	/* This needs to be the last item in the list: */
-	LEVEL_GENERATOR(NULL, NULL)
+	LEVEL_GENERATOR(NULL, NULL, NULL)
 };
 
 /* ========================================================================== */
@@ -74,5 +75,38 @@ generate_level:
 	
 	printf("Level generated in: ");
 	TIMER_STOP(t);
+}
+
+/* Will print a specified number of spaces to the file: */
+static void put_chars(FILE *f, int i, char c) {
+	while( i --> 0 )
+		fprintf(f, "%c", c);
+}
+
+void print_levels(FILE *out) {
+	unsigned i, max_id = 7, max_desc = strlen("Description:");
+	
+	/* Get the longest ID/Description length: */
+	for(i=0; GENERATOR_LIST[i].id; i++) {
+		if(strlen(GENERATOR_LIST[i].id) > max_id)
+			max_id = strlen(GENERATOR_LIST[i].id);
+		if(strlen(GENERATOR_LIST[i].desc) > max_desc)
+			max_desc = strlen(GENERATOR_LIST[i].desc);
+	}
+	
+	/* Print the header: */
+	fprintf(out, "ID:  ");
+	put_chars(out, max_id - strlen("ID:"), ' ');
+	fprintf(out, "Description:\n");
+	put_chars(out, max_id + max_desc + 2, '-');
+	fprintf(out, "\n");
+	
+	/* Print all things: */
+	for(i=0; GENERATOR_LIST[i].id; i++) {
+		fprintf(out, "%s  ", GENERATOR_LIST[i].id);
+		put_chars(out, max_id - strlen(GENERATOR_LIST[i].id), ' ');
+		fprintf(out, "%s%s\n", GENERATOR_LIST[i].desc, i==0 ? " (Default)":"");
+	}
+	fprintf(out, "\n");
 }
 

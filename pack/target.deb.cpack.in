@@ -4,7 +4,8 @@ include(@PROJECT_SOURCE_DIR@/pack/config.cpack)
 
 set(CPACK_GENERATOR "DEB")
 
-set(CPACK_DEBIAN_PACKAGE_DEPENDS    "libc6 (>= 2.3), libsdl1.2debian (>= 1.2.7)")
+# SDL 1.2.10 is needed to properly handle fullscreen:
+set(CPACK_DEBIAN_PACKAGE_DEPENDS    "libc6 (>= 2.3), libsdl1.2debian (>= 1.2.10)")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER ${CPACK_PACKAGE_VENDOR})
 set(CPACK_DEBIAN_PACKAGE_SECTION    "games")
 

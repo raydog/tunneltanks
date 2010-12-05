@@ -15,6 +15,12 @@
 #include "tanklist.h"
 #include "guisprites.h"
 
+
+/* Keeping this here it's the most elegant thing, but I plan on removing the
+ * bitmap thing entirely later, so I don't care: */
+static int __DEBUG_DUMP_BITMAPS = 0;
+
+
 /* TODO: We should break some of the game-related crap into another file, so
  *       that this file doesn't balloon in size when we introduce the menus, or
  *       the overview map... */
@@ -52,7 +58,8 @@ void main_loop(Screen *s, char *id) {
 	generate_level(lvl, id);
 	level_decorate(lvl);
 	level_make_bases(lvl);
-	level_dump_bmp(lvl, "debug_start.bmp");
+	if(__DEBUG_DUMP_BITMAPS)
+		level_dump_bmp(lvl, "debug_start.bmp");
 	
 	/* Start drawing! */
 	drawbuffer_set_default(b, color_rock);
@@ -67,8 +74,8 @@ void main_loop(Screen *s, char *id) {
 	
 	/* Load up two controllable tanks: */
 	t = tanklist_add_tank(tl, 1, level_get_spawn(lvl, 1));
-	/*controller_sdl_attach(t,  SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SLASH);*/
-	controller_twitch_attach(t); /* << Attach a twitch to a camera tank, so we can see if they're getting smarter... */
+	controller_sdl_attach(t,  SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SLASH);
+	/*controller_twitch_attach(t); << Attach a twitch to a camera tank, so we can see if they're getting smarter... */
 	screen_add_window(s, (SDL_Rect){GAME_WIDTH/2+1, 2, GAME_WIDTH/2-3, GAME_HEIGHT-6-STATUS_HEIGHT }, t);
 	screen_add_status(s, (SDL_Rect){GAME_WIDTH/2+2+2, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH/2-5-3, STATUS_HEIGHT}, t, 1);
 
@@ -105,7 +112,10 @@ void main_loop(Screen *s, char *id) {
 				
 				/* Program is trying to exit: */
 				case SDL_QUIT:
-					level_dump_bmp(lvl, "debug_end.bmp");
+					
+					if(__DEBUG_DUMP_BITMAPS)
+						level_dump_bmp(lvl, "debug_end.bmp");
+					
 					drawbuffer_destroy(b);
 					plist_destroy(pl);
 					tanklist_destroy(tl);
@@ -171,11 +181,36 @@ int main(int argc, char *argv[]) {
 			manual_seed = 1;
 			is_reading_seed = 0;
 		
+		} else if( !strcmp("--help", argv[i]) ) {
+			printf("%s %s\n\n", WINDOW_TITLE, VERSION);
+			
+			printf("--version      Display version, and exit.\n");
+			printf("--help         Display this help message and exit.\n\n");
+			
+			printf("--show-levels  List all available level generators.\n");
+			printf("--level <GEN>  Use <GEN> as the level generator.\n");
+			printf("--seed <INT>   Use <INT> as the random seed.\n");
+			
+			printf("--debug        Write before/after bitmaps of level to current directory.\n");
+			
+			return 0;
+		
+		} else if( !strcmp("--version", argv[i]) ) {
+			printf("%s %s\n", WINDOW_TITLE, VERSION);
+			return 0;
+		
+		} else if( !strcmp("--show-levels", argv[i]) ) {
+			print_levels(stdout);
+			return 0;
+		
 		} else if( !strcmp("--level", argv[i]) ) {
 			is_reading_level = 1;
 		
 		} else if( !strcmp("--seed", argv[i]) ) {
 			is_reading_seed = 1;
+		
+		} else if( !strcmp("--debug", argv[i]) ) {
+			__DEBUG_DUMP_BITMAPS = 1;
 		
 		} else {
 			fprintf(stderr, "Unexpected argument: '%s'\n", argv[i]);
