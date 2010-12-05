@@ -1,13 +1,32 @@
-This thing needs a CMake to configure, GNU Make to compile, and the SDL
+This thing needs CMake to configure, a Make-like program to compile, and the SDL
 libraries to run, so make sure you have all of those...
 
-To test this thing out, cd into this directory, and run:
+To test this program out, cd into this directory, and run:
 
-cmake . && make && ./src/tunneltanks
+  cmake . && make && ./tunneltanks
+
+To install, run:
+
+  sudo make install
 
 To return the project to it's pristine starting state, run:
 
-sudo ./dist-clean.sh
+  make dist-clean
 
-If you make any neat modifications (new level generator, new ai, bug fixes, etc)
-feel free to mail patches to me at 'ray [AT] poweredbytoast [DOT] com'.
+That command may need to be run as root if you did a make install, since make
+install also needs to be run as root and may leave a root-owned file in the
+directory. You can blame CMake for this inconvenience...
+
+Also, this project has some packaging targets, so try:
+
+  "make package-tbz2" to make a binary tar.bz2,
+  "make package-deb" to make a debian package file, and
+  "make package-rpm" to make a RPM package file. (Requires rpmbuild.)
+
+Also, if you make any neat modifications (ie: new level generator, new ai, bug
+fixes, etc...) feel free to mail patches to me at: 
+
+  'ray [AT] poweredbytoast [DOT] com'
+
+Thanks, and have fun. :)
+
