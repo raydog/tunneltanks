@@ -1,5 +1,4 @@
-A Tunneler re-implementation, written with SDL.
- TunnelTanks is a modernized version of the 1991 DOS game 'Tunneler' by Geoffrey
- Silverton. It maintains much of the original graphical style, but brings in a
- richer color palette, several level generators, AI tanks, and a completely open
- code base.
+TunnelTanks is a modernized version of the 1991 DOS game 'Tunneler' by Geoffrey
+Silverton. It maintains much of the original graphical style, but brings in a
+richer color palette, several level generators, AI tanks, and a completely open
+code base.

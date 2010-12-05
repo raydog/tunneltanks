@@ -1,0 +1,12 @@
+include(@PROJECT_SOURCE_DIR@/pack/config.cpack)
+
+# Custom stuff to make a deb package:
+
+set(CPACK_GENERATOR "RPM")
+
+set(CPACK_RPM_PACKAGE_LICENSE  "GPLv3")
+set(CPACK_RPM_PACKAGE_GROUP    "Amusements/Games")
+set(CPACK_RPM_PACKAGE_REQUIRES "SDL >= 1.2.7")
+
+file(READ @PROJECT_SOURCE_DIR@/pack/debian_desc CPACK_DEBIAN_PACKAGE_DESCRIPTION)
+

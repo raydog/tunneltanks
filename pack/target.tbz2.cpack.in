@@ -1,0 +1,7 @@
+include(@PROJECT_SOURCE_DIR@/pack/config.cpack)
+
+# Custom stuff to make a binary tar.bz2:
+
+set(CPACK_GENERATOR "TBZ2")
+file(READ @PROJECT_SOURCE_DIR@/pack/project_desc CPACK_PACKAGE_DESCRIPTION)
+
