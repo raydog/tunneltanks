@@ -88,7 +88,8 @@ static void do_return(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s
 	int targety = (i->y < 0) ? -OUTSIDE : OUTSIDE;
 	
 	/* Check to see if we've gotten there: */
-	if(i->x == 0 && i->y == targety) {
+	if((i->x == 0 && i->y == targety) || 
+	   (abs(i->x)<BASE_SIZE && abs(i->y)<BASE_SIZE)) {
 		*s = *vx = *vy = 0;
 		data->mode = TWITCH_RECHARGE;
 		return;
