@@ -76,7 +76,6 @@ static void fill_background(SDL_Surface *s) {
 			memcpy( p, &color_bg_dot, s->format->BytesPerPixel );
 		}
 	}
-	
 }
 
 void put_block_imm(SDL_Surface *s, int x, int y, unsigned w, unsigned h, Uint32 c) {
@@ -345,7 +344,7 @@ static SDL_Rect screen_get_best_resolution() {
 		return out;
 	}
 	
-	for (i=1; modes[i]; i++) {
+	for (i=0; modes[i]; i++) {
 		if(modes[i]->w * modes[i]->h > out_score) {
 			out = *modes[i];
 			out_score = out.w * out.h;
@@ -417,7 +416,7 @@ int screen_resize(Screen *s, unsigned width, unsigned height) {
 	/* Disable the mouse in fullscreen, otherwise enable: */
 	SDL_ShowCursor( s->is_fullscreen ? SDL_DISABLE : SDL_ENABLE );
 	
-	/* Draw: */
+	/* Redraw the game: */
 	screen_draw(s);
 	return 0;
 }
