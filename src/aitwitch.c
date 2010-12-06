@@ -62,7 +62,8 @@ static void do_exit_down(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8
 static void do_twitch(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s) {
 	TwitchPrivateData *data = d;
 	
-	if(i->health < TANK_STARTING_SHIELD/2 || i->energy < TANK_STARTING_FUEL/3) {
+	if(i->health < TANK_STARTING_SHIELD/2 || i->energy < TANK_STARTING_FUEL/3 ||
+	  (abs(i->x) < BASE_SIZE/2 && abs(i->y) < BASE_SIZE/2) ) {
 		/* We need a quick pick-me-up... */
 		data->mode = TWITCH_RETURN;
 	}
@@ -89,7 +90,7 @@ static void do_return(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s
 	
 	/* Check to see if we've gotten there: */
 	if((i->x == 0 && i->y == targety) || 
-	   (abs(i->x)<BASE_SIZE && abs(i->y)<BASE_SIZE)) {
+	   (abs(i->x)<BASE_SIZE/2 && abs(i->y)<BASE_SIZE/2)) {
 		*s = *vx = *vy = 0;
 		data->mode = TWITCH_RECHARGE;
 		return;
