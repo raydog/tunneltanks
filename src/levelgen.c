@@ -23,7 +23,7 @@ LevelGenerator GENERATOR_LIST[] =
 {
 	LEVEL_GENERATOR("toast",  toast_generator,  "Twisty, cavernous maps." ),
 	LEVEL_GENERATOR("simple", simple_generator, "Simple rectangular maps with ragged sides."),
-	LEVEL_GENERATOR("maze",   maze_generator,   "Complicated maps with a maze connecting bases."),
+	LEVEL_GENERATOR("maze",   maze_generator,   "Complicated maps with a maze surrounding the bases."),
 	
 	/* This needs to be the last item in the list: */
 	LEVEL_GENERATOR(NULL, NULL, NULL)
