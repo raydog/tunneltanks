@@ -39,8 +39,7 @@ LevelGenerator GENERATOR_LIST[] =
 	printf("%u.%02u sec\n", temp/100, temp%100); \
 } while(0)
 
-/* Linear search is ok here, cause this function should be rarely called, and
- * there aren't many level generators: */
+/* Linear search is ok here, since there aren't many level generators: */
 
 void generate_level(Level *lvl, char *id) {
 	LevelGeneratorFunc func = NULL;
