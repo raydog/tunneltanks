@@ -184,7 +184,7 @@ void maze_generator(Level *lvl) {
 	draw_line(lvl, VECTOR(0,0), VECTOR(0,m->h*CELL_SIZE), 0, 1);
 	
 	/* Fill in the unused space left behind on the right/bottom: */
-	/* TODO: Have a fill_box() in levelgensimple.c? */
+	/* TODO: Have a fill_box() in levelgenutil.c? */
 	for(y=0; y<lvl->height; y++)
 		for(x=m->w*CELL_SIZE; x<lvl->width; x++)
 			lvl->array[y*lvl->width+x] = 0;
