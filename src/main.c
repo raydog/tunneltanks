@@ -176,8 +176,9 @@ void main_loop(Screen *s, char *id) {
 int main(int argc, char *argv[]) {
 	char text[1024];
 	Screen *s;
-	unsigned i, is_reading_level=0, is_reading_seed=0, fullscreen=0;
-	char *id = NULL;
+	unsigned i, is_reading_level=0, is_reading_seed=0, is_reading_file=0;
+	unsigned fullscreen=0;
+	char *id = NULL, *outfile_name = NULL;
 	int seed = 0, manual_seed=0;
 	
 	/* Iterate through the CLAs: */
@@ -191,18 +192,22 @@ int main(int argc, char *argv[]) {
 			manual_seed = 1;
 			is_reading_seed = 0;
 		
+		} else if(is_reading_file) {
+			outfile_name = argv[i];
+			is_reading_file = 0;
+		
 		} else if( !strcmp("--help", argv[i]) ) {
 			printf("%s %s\n\n", WINDOW_TITLE, VERSION);
 			
-			printf("--version      Display version, and exit.\n");
-			printf("--help         Display this help message and exit.\n\n");
+			printf("--version          Display version, and exit.\n");
+			printf("--help             Display this help message and exit.\n\n");
 			
-			printf("--show-levels  List all available level generators.\n");
-			printf("--level <GEN>  Use <GEN> as the level generator.\n");
-			printf("--seed <INT>   Use <INT> as the random seed.\n");
-			printf("--fullscreen   Start in fullscreen mode.\n\n");
-			
-			printf("--debug        Write before/after bitmaps of level to current directory.\n");
+			printf("--show-levels      List all available level generators.\n");
+			printf("--level <GEN>      Use <GEN> as the level generator.\n");
+			printf("--seed <INT>       Use <INT> as the random seed.\n");
+			printf("--fullscreen       Start in fullscreen mode.\n\n");
+			printf("--only-gen <FILE>  Will make the level, write a bitmap to <FILE>, and exit.\n");
+			printf("--debug            Write before/after bitmaps of level to current directory.\n");
 			
 			return 0;
 		
@@ -226,6 +231,9 @@ int main(int argc, char *argv[]) {
 		} else if( !strcmp("--fullscreen", argv[i]) ) {
 			fullscreen = 1;
 		
+		} else if( !strcmp("--only-gen", argv[i]) ) {
+			is_reading_file = 1;
+		
 		} else {
 			fprintf(stderr, "Unexpected argument: '%s'\n", argv[i]);
 			exit(1);
@@ -241,6 +249,21 @@ int main(int argc, char *argv[]) {
 	if(manual_seed) srand(seed);
 	else            rand_seed();
 	
+	/* If we're only writing the generated level to file, then just do that: */
+	if(outfile_name) {
+		Level *lvl = level_new(NULL, 1000, 500);
+	
+		/* Generate our random level: */
+		generate_level(lvl, id);
+		level_decorate(lvl);
+		level_make_bases(lvl);
+		
+		/* Dump it out, and exit: */
+		level_dump_bmp(lvl, outfile_name);
+		SDL_Quit();
+		return 0;
+	}
+	
 	/* New windowed screen: */
 	s = screen_new(fullscreen);
 	
@@ -251,7 +274,7 @@ int main(int argc, char *argv[]) {
 	main_loop(s, id);
 	
 	screen_destroy(s);
-	
+
 	SDL_Quit();
 	print_mem_stats();
 	return 0;
