@@ -102,36 +102,6 @@ static void add_rock_lines(Level *lvl, Side s) {
 #undef _LOOKUP_
 
 
-void rough_up(Level *lvl) {
-	unsigned x, y;
-	
-	/* Sanitize our input: */
-	for(x=0; x<lvl->width * lvl->height; x++)
-		lvl->array[x] = !!lvl->array[x];
-	
-	/* Mark all spots that are blank, but next to spots that are marked: */
-	for(x=0; x<lvl->width; x++) {
-		for(y=0; y<lvl->height; y++) {
-			unsigned t = 0;
-			
-			if(lvl->array[y*lvl->width + x]) continue;
-			
-			t += (x!=0            ) && lvl->array[y*lvl->width + x - 1] == 1;
-			t += (x!=lvl->width-1 ) && lvl->array[y*lvl->width + x + 1] == 1;
-			t += (y!=0            ) && lvl->array[(y-1)*lvl->width + x] == 1;
-			t += (y!=lvl->height-1) && lvl->array[(y+1)*lvl->width + x] == 1;
-
-			if(t) lvl->array[y*lvl->width + x] = 2;
-		}
-	}
-	
-	/* For every marked spot, randomly fill it: */
-	for(x=0; x<lvl->width * lvl->height; x++)
-		if(lvl->array[x] == 2)
-			lvl->array[x] = rand_bool(500);
-}
-
-
 static void add_spawns(Level *lvl) {
 	unsigned i, j;
 	

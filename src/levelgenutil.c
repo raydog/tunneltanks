@@ -14,6 +14,35 @@ void fill_all(Level *lvl, char c) {
 	}
 }
 
+void rough_up(Level *lvl) {
+	unsigned x, y;
+	
+	/* Sanitize our input: */
+	for(x=0; x<lvl->width * lvl->height; x++)
+		lvl->array[x] = !!lvl->array[x];
+	
+	/* Mark all spots that are blank, but next to spots that are marked: */
+	for(x=0; x<lvl->width; x++) {
+		for(y=0; y<lvl->height; y++) {
+			unsigned t = 0;
+			
+			if(lvl->array[y*lvl->width + x]) continue;
+			
+			t += (x!=0            ) && lvl->array[y*lvl->width + x - 1] == 1;
+			t += (x!=lvl->width-1 ) && lvl->array[y*lvl->width + x + 1] == 1;
+			t += (y!=0            ) && lvl->array[(y-1)*lvl->width + x] == 1;
+			t += (y!=lvl->height-1) && lvl->array[(y+1)*lvl->width + x] == 1;
+
+			if(t) lvl->array[y*lvl->width + x] = 2;
+		}
+	}
+	
+	/* For every marked spot, randomly fill it: */
+	for(x=0; x<lvl->width * lvl->height; x++)
+		if(lvl->array[x] == 2)
+			lvl->array[x] = rand_bool(500);
+}
+
 Vector pt_rand(unsigned w, unsigned h, unsigned border) {
 	Vector out;
 	out.x = rand_int(border, w - border);
@@ -27,19 +56,20 @@ unsigned pt_dist(Vector a, Vector b) {
 	return (a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y);
 }
 
-void set_circle(char *a, unsigned w, unsigned x, unsigned y, char value) {
+/* Used for point drawing: */
+static void set_point(Level *lvl, unsigned x, unsigned y, char value) {
+	if(x >= lvl->width || y >= lvl->height) return;
+	lvl->array[y*lvl->width+x] = value;
+}
+
+void set_circle(Level *lvl, unsigned x, unsigned y, char value) {
 	register int tx, ty;
 	for(ty=-3; ty<=3; ty++) {
 		for(tx=-3; tx<=3; tx++) {
 			if((tx==-3 || tx==3) && (ty==-3 || ty==3)) continue;
-			a[ (y+ty)*w + x + tx ] = value;
+			set_point(lvl, x+tx, y+ty, value);
 		}
 	}
-}
-
-/* Used for point drawing: */
-static void set_point(char *a, unsigned w, unsigned x, unsigned y, char value) {
-	a[y*w+x] = value;
 }
 
 #define SWAP(type,a,b) do { type t = (a); (a)=(b); (b)=t; } while(0)
@@ -49,7 +79,7 @@ static void set_point(char *a, unsigned w, unsigned x, unsigned y, char value) {
 void draw_line(Level *dest, Vector a, Vector b, char value, int fat_line) {
 	int swap, dx, dy, error, stepy;
 	register unsigned x, y;
-	void (*pt_func)(char *, unsigned, unsigned, unsigned, char) ;
+	void (*pt_func)(Level *, unsigned, unsigned, char) ;
 	
 	/* How is this thing getting drawn? */
 	pt_func = (fat_line) ? set_circle : set_point;
@@ -71,8 +101,8 @@ void draw_line(Level *dest, Vector a, Vector b, char value, int fat_line) {
 	
 	/* Now, for every x from a.x to b.x, add the correct dot: */
 	for (x = a.x, y=a.y; x <= b.x; x++) {
-		if(swap) pt_func(dest->array, dest->width, y, x, value);
-		else     pt_func(dest->array, dest->width, x, y, value);
+		if(swap) pt_func(dest, y, x, value);
+		else     pt_func(dest, x, y, value);
 
 		error -= dy;
 		if(error < 0) {

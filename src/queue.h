@@ -11,6 +11,7 @@ void     queue_destroy(Queue *q) ;
 unsigned queue_length(Queue *q) ;
 void     queue_enqueue(Queue *q, Vector *v) ;
 Vector   queue_dequeue(Queue *q) ;
+Vector   queue_pop(Queue *q) ;
 
 #endif /* _QUEUE_H_ */
 

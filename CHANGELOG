@@ -4,9 +4,9 @@ v0.4:
  - Improved Twitch's self-preservation instincts.
  - All code is now managed by the Bazaar VCS.
  - Changed digging behavior to be more like the original game.
- - Made it possible for there to be more than one level generator, and added a
-   new 'simple' level generator. The original one is named 'toast'. Better name
-   coming soon. :)
+ - Made it possible for there to be more than one level generator, and added 2
+   new level generators: 'simple' and 'maze'. The original one is named 'toast'.
+   Better name coming soon. :)
  - Added fullscreen capabilities.
  - Improved command-line parsing.
  - Other bugfixes.

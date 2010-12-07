@@ -59,3 +59,11 @@ Vector queue_dequeue(Queue *q) {
 	return out;
 }
 
+/* Added, so that the Queue can act like a stack when needed: */
+Vector queue_pop(Queue *q) {
+	if(q->l == 0) return (Vector){0,0};
+	q->l--;
+	if(q->j==0) q->j = q->max;
+	return q->array[--q->j];
+}
+
