@@ -199,13 +199,20 @@ void maze_generator(Level *lvl) {
 	
 	/* Add in the bases: */
 	for(i=0; i<MAX_TANKS; i++) {
+		int tx, ty;
+		
 		/* Pick a random spot for the base: */
 		do {
 			x = rand_int(0, m->w-1); y = rand_int(0, m->h-1);
 		} while(m->data[y*m->w+x].used);
 		
-		/* Ok, we have a spot. Mark it as ours, and add it to the level: */
-		m->data[y*m->w+x].used = 1;
+		/* Mark our spot, and the ones around it as well: */
+		for(tx=-1; tx<=1; tx++)
+			for(ty=-1; ty<=1; ty++)
+				if(x+tx < m->w && y+ty < m->h)
+					m->data[(y+ty)*m->w+(x+tx)].used = 1;
+		
+		/* Now, add it to the level: */
 		lvl->spawn[i] = VECTOR(
 			x * CELL_SIZE + CELL_SIZE/2,
 			y * CELL_SIZE + CELL_SIZE/2
