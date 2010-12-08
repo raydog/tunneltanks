@@ -15,6 +15,7 @@
 
 /* The different Twitch travel modes: */
 typedef enum TwitchMode {
+	TWITCH_START,     /* An init state that picks a direction to leave from. */
 	TWITCH_EXIT_UP,   /* Leave the base in an upward direction. */
 	TWITCH_EXIT_DOWN, /* Leave the base in a downward direction. */
 	TWITCH_TWITCH,    /* Do what Twitch does best. */
@@ -29,12 +30,30 @@ typedef struct TwitchPrivateData {
 } TwitchPrivateData;
 
 
-/* TODO: We need a way to query the level for rock, and this method needs to be
- *       sure that the controller/ai can't see further than a window... */
+static void do_start(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s) {
+	TwitchPrivateData *data = d;
+	int no_up, no_down;
+	
+	no_up   = level_slice_query_circle(i->slice, 0, -OUTSIDE+1) == LSQ_COLLIDE;
+	no_down = level_slice_query_circle(i->slice, 0,  OUTSIDE-1) == LSQ_COLLIDE;
+	
+	if(no_up && no_down) {
+		printf("BOTH EXITS BLOCKED! FIX THIS, RAYMOND!!!\n");
+		data->mode = rand_bool(500) ? TWITCH_EXIT_UP : TWITCH_EXIT_DOWN;
+	} else if(no_up) {
+		data->mode = TWITCH_EXIT_DOWN;
+		printf("Up is blocked.\n");
+	} else if(no_down) {
+		data->mode = TWITCH_EXIT_UP;
+		printf("Down is blocked.\n");
+	} else
+		data->mode = rand_bool(500) ? TWITCH_EXIT_UP : TWITCH_EXIT_DOWN;
+}
+
 static void do_exit_up(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s) {
 	TwitchPrivateData *data = d;
 	
-	*vx = *vy = 0;
+	*vx = *vy = *s = 0;
 	
 	if(i->y < -OUTSIDE) { /* Some point outside the base. */
 		data->time_to_change = 0;
@@ -114,7 +133,7 @@ static void do_recharge(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 
 	
 	/* Check to see if we're fully charged/healed: */
 	if(i->health == TANK_STARTING_SHIELD && i->energy == TANK_STARTING_FUEL) {
-		data->mode = rand_bool(500) ? TWITCH_EXIT_UP : TWITCH_EXIT_DOWN;
+		data->mode = TWITCH_START;
 		return;
 	}
 	
@@ -128,6 +147,7 @@ static void twitch_controller(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, 
 	TwitchPrivateData *data = d;
 	
 	switch(data->mode) {
+		case TWITCH_START:     do_start    (i, d, vx, vy, s); return;
 		case TWITCH_EXIT_UP:   do_exit_up  (i, d, vx, vy, s); return;
 		case TWITCH_EXIT_DOWN: do_exit_down(i, d, vx, vy, s); return;
 		case TWITCH_TWITCH:    do_twitch   (i, d, vx, vy, s); return;
@@ -138,7 +158,9 @@ static void twitch_controller(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, 
 
 void controller_twitch_attach( Tank *t ) {
 	TwitchPrivateData *data = get_object(TwitchPrivateData);
-	data->mode = rand_bool(500) ? TWITCH_EXIT_UP : TWITCH_EXIT_DOWN;
+	
+	data->mode = TWITCH_START;
+	
 	tank_set_controller(t, twitch_controller, data);
 }
 

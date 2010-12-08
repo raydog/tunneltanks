@@ -37,17 +37,14 @@ LevelSliceQuery level_slice_query_point(LevelSlice *ls, int x, int y) {
 	
 	if(abs(x) >= LS_WIDTH/2 || abs(y) >= LS_HEIGHT/2) return LSQ_OUT_OF_BOUNDS;
 	c = level_get(ls->lvl, tx+x, ty+y);
-	
-	if(c==DIRT_HI || c==DIRT_LO) return LSQ_OPEN;
+
+	if(c==DIRT_HI || c==DIRT_LO || c==BLANK) return LSQ_OPEN;
 	return LSQ_COLLIDE;
 }
 
 
 LevelSliceQuery level_slice_query_circle(LevelSlice *ls, int x, int y) {
-	unsigned tx, ty;
 	int dx, dy;
-	
-	tank_get_position(ls->t, &tx, &ty);
 	
 	for(dy=y-3; dy<=y+3; dy++)
 		for(dx=x-3; dx<=x+3; dx++) {
@@ -56,7 +53,7 @@ LevelSliceQuery level_slice_query_circle(LevelSlice *ls, int x, int y) {
 			/* Don't take out the corners: */
 			if((dx==x-3 || dx==x+3) && (dy==y-3 || dy==y+3)) continue;
 			
-			out = level_slice_query_point(ls, dx+x+tx, dy+y+ty);
+			out = level_slice_query_point(ls, dx, dy);
 			if(out==LSQ_OUT_OF_BOUNDS || out==LSQ_COLLIDE) return out;
 		}
 	
