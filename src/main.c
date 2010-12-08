@@ -38,7 +38,7 @@ void smart_delay() {
 }
 
 
-void main_loop(Screen *s, char *id) {
+void main_loop(Screen *s, char *id, unsigned width, unsigned height) {
 	Level *lvl;
 	unsigned frames = 0;
 	time_t tiempo, newtiempo;
@@ -50,8 +50,8 @@ void main_loop(Screen *s, char *id) {
 	
 	/* Initialize most of the structures: */
 	pl  = plist_new();
-	b   = drawbuffer_new(1000, 500);
-	lvl = level_new(b, 1000, 500);
+	b   = drawbuffer_new(width, height);
+	lvl = level_new(b, width, height);
 	tl  = tanklist_new(lvl, pl);
 	
 	/* Generate our random level: */
@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
 	char text[1024];
 	Screen *s;
 	unsigned i, is_reading_level=0, is_reading_seed=0, is_reading_file=0;
-	unsigned fullscreen=0;
+	unsigned fullscreen=0, width=1000, height=500;
 	char *id = NULL, *outfile_name = NULL;
 	int seed = 0, manual_seed=0;
 	
@@ -205,6 +205,7 @@ int main(int argc, char *argv[]) {
 			printf("--show-levels      List all available level generators.\n");
 			printf("--level <GEN>      Use <GEN> as the level generator.\n");
 			printf("--seed <INT>       Use <INT> as the random seed.\n");
+			printf("--large            Generate a far larger level.\n");
 			printf("--fullscreen       Start in fullscreen mode.\n\n");
 			printf("--only-gen <FILE>  Will make the level, write a bitmap to <FILE>, and exit.\n");
 			printf("--debug            Write before/after bitmaps of level to current directory.\n");
@@ -224,6 +225,9 @@ int main(int argc, char *argv[]) {
 		
 		} else if( !strcmp("--seed", argv[i]) ) {
 			is_reading_seed = 1;
+		
+		} else if( !strcmp("--large", argv[i]) ) {
+			width = 1500; height = 750;
 		
 		} else if( !strcmp("--debug", argv[i]) ) {
 			__DEBUG_DUMP_BITMAPS = 1;
@@ -271,7 +275,7 @@ int main(int argc, char *argv[]) {
 	SDL_VideoDriverName( text, sizeof(text) );
 	printf("Using video driver: %s\n", text);
 	
-	main_loop(s, id);
+	main_loop(s, id, width, height);
 	
 	screen_destroy(s);
 

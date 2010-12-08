@@ -8,6 +8,9 @@ v0.4:
    new level generators: 'simple' and 'maze'. The original one is named 'toast'.
    Better name coming soon. :)
  - Added fullscreen capabilities.
+ - Added a means for an AI to query the surrounding level.
+ - With the '--large' CLA, you can have the level generators make even BIGGER
+   maps. (1500x750 vs 1000x500)
  - Improved command-line parsing.
  - Other bugfixes.
 
