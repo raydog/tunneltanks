@@ -38,14 +38,12 @@ static void do_start(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s)
 	no_down = level_slice_query_circle(i->slice, 0,  OUTSIDE-1) == LSQ_COLLIDE;
 	
 	if(no_up && no_down) {
-		printf("BOTH EXITS BLOCKED! FIX THIS, RAYMOND!!!\n");
+		/* TODO: Make it so that this condition isn't possible... */
 		data->mode = rand_bool(500) ? TWITCH_EXIT_UP : TWITCH_EXIT_DOWN;
 	} else if(no_up) {
 		data->mode = TWITCH_EXIT_DOWN;
-		printf("Up is blocked.\n");
 	} else if(no_down) {
 		data->mode = TWITCH_EXIT_UP;
-		printf("Down is blocked.\n");
 	} else
 		data->mode = rand_bool(500) ? TWITCH_EXIT_UP : TWITCH_EXIT_DOWN;
 }
