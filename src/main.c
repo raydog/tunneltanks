@@ -74,8 +74,8 @@ void main_loop(Screen *s, char *id) {
 	
 	/* Load up two controllable tanks: */
 	t = tanklist_add_tank(tl, 1, level_get_spawn(lvl, 1));
-	/*controller_sdl_attach(t,  SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SLASH);*/
-	controller_twitch_attach(t); /* << Attach a twitch to a camera tank, so we can see if they're getting smarter... */
+	controller_sdl_attach(t,  SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SLASH);
+	/*controller_twitch_attach(t);  << Attach a twitch to a camera tank, so we can see if they're getting smarter... */
 	screen_add_window(s, (SDL_Rect){GAME_WIDTH/2+1, 2, GAME_WIDTH/2-3, GAME_HEIGHT-6-STATUS_HEIGHT }, t);
 	screen_add_status(s, (SDL_Rect){GAME_WIDTH/2+2+2, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH/2-5-3, STATUS_HEIGHT}, t, 1);
 
