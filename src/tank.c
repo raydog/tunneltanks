@@ -29,6 +29,7 @@ struct Tank {
 	
 	Level *lvl;
 	PList *pl;
+	LevelSlice *cached_slice;
 };
 
 
@@ -37,6 +38,9 @@ Tank *tank_new(Level *lvl, PList *pl, unsigned x, unsigned y, unsigned color) {
 	
 	t = get_object(Tank);
 	t->x = x; t->y = y; t->color = color;
+	
+	t->cached_slice = level_slice_new(lvl, t);
+	
 	/* Let's just make the starting direction random, because we can: */
 	t->direction = rand_int(0, 7);
 	if(t->direction >= 4) t->direction ++;
@@ -57,6 +61,7 @@ Tank *tank_new(Level *lvl, PList *pl, unsigned x, unsigned y, unsigned color) {
 
 void tank_destroy(Tank *t) {
 	if(!t) return;
+	level_slice_free(t->cached_slice);
 	free_mem(t->controller_data);
 	free_mem(t);
 }
@@ -121,7 +126,8 @@ void tank_move(Tank *t, TankList *tl) {
 			.energy = t->energy,
 			.health = t->health,
 			.x      = t->x - base.x,
-			.y      = t->y - base.y};
+			.y      = t->y - base.y,
+			.slice  = t->cached_slice};
 		t->controller(&i, t->controller_data, &t->vx, &t->vy, &t->is_shooting);
 	}
 	

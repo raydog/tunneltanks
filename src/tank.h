@@ -1,14 +1,21 @@
 #ifndef _TANK_H_
 #define _TANK_H_
 
+
+typedef struct Tank Tank;
+
+/* For the controllers/AIs: */
+#include "levelslice.h"
+
 /* Put inside a structure, so we are protected from casual AI cheating: */
 typedef struct PublicTankInfo {
 	unsigned health, energy;
 	int x, y; /* relative from home base */
+	LevelSlice *slice;
 } PublicTankInfo;
 
-typedef struct Tank Tank;
 typedef void (*TankController)(PublicTankInfo *, void *, Sint8 *, Sint8 *, Uint8 *) ;
+
 
 #include <SDL.h>
 #include "level.h"
