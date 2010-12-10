@@ -16,7 +16,7 @@
 #include "guisprites.h"
 
 
-/* Keeping this here it's the most elegant thing, but I plan on removing the
+/* Keeping this here isn't the most elegant thing, but I plan on removing the
  * bitmap thing entirely later, so I don't care: */
 static int __DEBUG_DUMP_BITMAPS = 0;
 
@@ -38,7 +38,59 @@ void smart_delay() {
 }
 
 
-void main_loop(Screen *s, char *id, unsigned width, unsigned height) {
+void twitch_fill(TankList *tl, Level *lvl, unsigned starting_id) {
+	unsigned i;
+	
+	for(i=starting_id; i<MAX_TANKS; i++) {
+		Tank *t = tanklist_add_tank(tl, i, level_get_spawn(lvl, i));
+		controller_twitch_attach(t);
+	}
+}
+
+void init_single_player(Screen *s, TankList *tl, Level *lvl) {
+	Tank *t;
+	
+	/* Ready the tank! */
+	t = tanklist_add_tank(tl, 0, level_get_spawn(lvl, 0));
+	controller_sdl_attach(t, SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_LCTRL);
+	screen_add_window(s, (SDL_Rect){2, 2, GAME_WIDTH-4, GAME_HEIGHT-6-STATUS_HEIGHT }, t);
+	screen_add_status(s, (SDL_Rect){9, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH-12, STATUS_HEIGHT}, t, 1);
+	
+	/* Add the GUI bitmaps: */
+	screen_add_bitmap(s, (SDL_Rect){3, GAME_HEIGHT - 2 - STATUS_HEIGHT    , 4, 5}, GUI_ENERGY, &color_status_energy);
+	screen_add_bitmap(s, (SDL_Rect){3, GAME_HEIGHT - 2 - STATUS_HEIGHT + 6, 4, 5}, GUI_HEALTH, &color_status_health);
+	
+	/* Fill up the rest of the slots with Twitches: */
+	twitch_fill(tl, lvl, 1);
+}
+
+void init_double_player(Screen *s, TankList *tl, Level *lvl) {
+	Tank *t;
+	
+	/* Ready the tanks! */
+	t = tanklist_add_tank(tl, 0, level_get_spawn(lvl, 0));
+	controller_sdl_attach(t,  SDLK_a, SDLK_d, SDLK_w, SDLK_s, SDLK_LCTRL);
+	screen_add_window(s, (SDL_Rect){2, 2, GAME_WIDTH/2-3, GAME_HEIGHT-6-STATUS_HEIGHT }, t);
+	screen_add_status(s, (SDL_Rect){3, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH/2-5-2, STATUS_HEIGHT}, t, 0);
+	
+	/* Load up two controllable tanks: */
+	t = tanklist_add_tank(tl, 1, level_get_spawn(lvl, 1));
+	controller_sdl_attach(t,  SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SLASH);
+	/*controller_twitch_attach(t);  << Attach a twitch to a camera tank, so we can see if they're getting smarter... */
+	screen_add_window(s, (SDL_Rect){GAME_WIDTH/2+1, 2, GAME_WIDTH/2-3, GAME_HEIGHT-6-STATUS_HEIGHT }, t);
+	screen_add_status(s, (SDL_Rect){GAME_WIDTH/2+2+2, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH/2-5-3, STATUS_HEIGHT}, t, 1);
+
+	/* Add the GUI bitmaps: */
+	screen_add_bitmap(s, (SDL_Rect){GAME_WIDTH/2-2, GAME_HEIGHT - 2 - STATUS_HEIGHT    , 4, 5}, GUI_ENERGY, &color_status_energy);
+	screen_add_bitmap(s, (SDL_Rect){GAME_WIDTH/2-2, GAME_HEIGHT - 2 - STATUS_HEIGHT + 6, 4, 5}, GUI_HEALTH, &color_status_health);
+	
+	/* Fill up the rest of the slots with Twitches: */
+	twitch_fill(tl, lvl, 2);
+}
+
+
+/* TODO: We need a configuration structure. These args are getting out-of-hand: */
+void main_loop(Screen *s, char *id, unsigned width, unsigned height, int player_count) {
 	Level *lvl;
 	unsigned frames = 0;
 	time_t tiempo, newtiempo;
@@ -46,7 +98,6 @@ void main_loop(Screen *s, char *id, unsigned width, unsigned height) {
 	TankList *tl;
 	DrawBuffer *b;
 	PList *pl;
-	Tank *t;
 	
 	/* Initialize most of the structures: */
 	pl  = plist_new();
@@ -64,40 +115,13 @@ void main_loop(Screen *s, char *id, unsigned width, unsigned height) {
 	/* Start drawing! */
 	drawbuffer_set_default(b, color_rock);
 	level_draw_all(lvl, b);
-	
-	/* Ready the tanks! */
 	screen_set_mode_level(s, b);
-	t = tanklist_add_tank(tl, 0, level_get_spawn(lvl, 0));
-	controller_sdl_attach(t,  SDLK_a, SDLK_d, SDLK_w, SDLK_s, SDLK_LCTRL);
-	screen_add_window(s, (SDL_Rect){2, 2, GAME_WIDTH/2-3, GAME_HEIGHT-6-STATUS_HEIGHT }, t);
-	screen_add_status(s, (SDL_Rect){3, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH/2-5-2, STATUS_HEIGHT}, t, 0);
 	
-	/* Load up two controllable tanks: */
-	t = tanklist_add_tank(tl, 1, level_get_spawn(lvl, 1));
-	controller_sdl_attach(t,  SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SLASH);
-	/*controller_twitch_attach(t);  << Attach a twitch to a camera tank, so we can see if they're getting smarter... */
-	screen_add_window(s, (SDL_Rect){GAME_WIDTH/2+1, 2, GAME_WIDTH/2-3, GAME_HEIGHT-6-STATUS_HEIGHT }, t);
-	screen_add_status(s, (SDL_Rect){GAME_WIDTH/2+2+2, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH/2-5-3, STATUS_HEIGHT}, t, 1);
-
-	/* Add the GUI bitmaps: */
-	screen_add_bitmap(s, (SDL_Rect){GAME_WIDTH/2-2, GAME_HEIGHT - 2 - STATUS_HEIGHT    , 4, 5}, GUI_ENERGY, &color_status_energy);
-	screen_add_bitmap(s, (SDL_Rect){GAME_WIDTH/2-2, GAME_HEIGHT - 2 - STATUS_HEIGHT + 6, 4, 5}, GUI_HEALTH, &color_status_health);
-	
-	/*screen_add_status(s, (SDL_Rect){}, t, 1);*/
-	
-	/* Fill up the rest of the slots with Twitches: */
-	t = tanklist_add_tank(tl, 2, level_get_spawn(lvl, 2));
-	controller_twitch_attach(t);
-	t = tanklist_add_tank(tl, 3, level_get_spawn(lvl, 3));
-	controller_twitch_attach(t);
-	t = tanklist_add_tank(tl, 4, level_get_spawn(lvl, 4));
-	controller_twitch_attach(t);
-	t = tanklist_add_tank(tl, 5, level_get_spawn(lvl, 5));
-	controller_twitch_attach(t);
-	t = tanklist_add_tank(tl, 6, level_get_spawn(lvl, 6));
-	controller_twitch_attach(t);
-	t = tanklist_add_tank(tl, 7, level_get_spawn(lvl, 7));
-	controller_twitch_attach(t);
+	/* Set up the players/GUI: */
+	if(player_count == 1)
+		init_single_player(s, tl, lvl);
+	else
+		init_double_player(s, tl, lvl);
 	
 	tiempo = time(NULL);
 	while(1) {
@@ -177,7 +201,7 @@ int main(int argc, char *argv[]) {
 	char text[1024];
 	Screen *s;
 	unsigned i, is_reading_level=0, is_reading_seed=0, is_reading_file=0;
-	unsigned fullscreen=0, width=1000, height=500;
+	unsigned fullscreen=0, width=1000, height=500, player_count = 2;
 	char *id = NULL, *outfile_name = NULL;
 	int seed = 0, manual_seed=0;
 	
@@ -202,6 +226,9 @@ int main(int argc, char *argv[]) {
 			printf("--version          Display version, and exit.\n");
 			printf("--help             Display this help message and exit.\n\n");
 			
+			printf("--single           Only have one user-controlled tank.\n");
+			printf("--double           Have two user-controlled tanks. (Default)\n\n");
+			
 			printf("--show-levels      List all available level generators.\n");
 			printf("--level <GEN>      Use <GEN> as the level generator.\n");
 			printf("--seed <INT>       Use <INT> as the random seed.\n");
@@ -215,6 +242,14 @@ int main(int argc, char *argv[]) {
 		} else if( !strcmp("--version", argv[i]) ) {
 			printf("%s %s\n", WINDOW_TITLE, VERSION);
 			return 0;
+		
+		
+		} else if( !strcmp("--single", argv[i]) ) {
+			player_count = 1;
+		
+		} else if( !strcmp("--double", argv[i]) ) {
+			player_count = 2;
+		
 		
 		} else if( !strcmp("--show-levels", argv[i]) ) {
 			print_levels(stdout);
@@ -275,7 +310,7 @@ int main(int argc, char *argv[]) {
 	SDL_VideoDriverName( text, sizeof(text) );
 	printf("Using video driver: %s\n", text);
 	
-	main_loop(s, id, width, height);
+	main_loop(s, id, width, height, player_count);
 	
 	screen_destroy(s);
 
