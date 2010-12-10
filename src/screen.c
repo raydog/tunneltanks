@@ -121,7 +121,7 @@ static void screen_draw_static(Screen *s, Window *w) {
 	if(!w->counter) {
 		unsigned intensity = 1000 * energy / STATIC_THRESHOLD;
 		w->showing_static = !rand_bool(intensity);
-		w->counter = rand_int(GAME_FPS/8, GAME_FPS/4) * w->showing_static ? 1 : 2;
+		w->counter = rand_int(GAME_FPS/16, GAME_FPS/8) * w->showing_static ? 1 : 4;
 
 	} else w->counter--;
 	
