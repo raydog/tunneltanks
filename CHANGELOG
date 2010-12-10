@@ -1,3 +1,6 @@
+v?.?:
+ - Made it possible to pick either single, or two-player modes.
+
 v0.4:
  - Switched to a CMake/CPack-based build/packaging system, which can build
    binary tar.bz2's, deb's, and rpm's.
