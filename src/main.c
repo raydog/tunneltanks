@@ -234,8 +234,8 @@ int main(int argc, char *argv[]) {
 			printf("--seed <INT>       Use <INT> as the random seed.\n");
 			printf("--large            Generate a far larger level.\n");
 			printf("--fullscreen       Start in fullscreen mode.\n\n");
-			printf("--only-gen <FILE>  Will make the level, write a bitmap to <FILE>, and exit.\n");
-			printf("--debug            Write before/after bitmaps of level to current directory.\n");
+			printf("--only-gen <FILE>  Will only write the level to a .bmp file, and exit.\n");
+			printf("--debug            Write before/after .bmp's to current directory.\n");
 			
 			return 0;
 		
