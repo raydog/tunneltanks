@@ -1,4 +1,4 @@
-#include <math.h>
+#include <stdlib.h>
 #include "screen.h"
 #include "tweak.h"
 #include "memalloc.h"
@@ -80,18 +80,6 @@ static void fill_background() {
 		}
 	}
 }
-
-/*
-void put_block(SDL_Surface *s, int x, int y, unsigned w, unsigned h, Color c) {
-	Rect rect = {x, y, w, h};
-	gamelib_draw_box(&rect, c);
-}
-
-void put_block(SDL_Surface *s, unsigned x, unsigned y, unsigned w, unsigned h, Uint8 r, Uint8 g, Uint8 b) {
-	Uint32 c = SDL_MapRGB( s->format, r, g, b );
-	put_block_imm(s, x, y, w, h, c);
-}
-*/
 
 void screen_draw_pixel(Screen *s, unsigned x, unsigned y, Color color) {
 	unsigned w, h, xs, ys;
@@ -298,7 +286,7 @@ static void screen_draw(Screen *s) {
 }
 
 
-/* The constructor sets the SDL mode: */
+/* The constructor sets the video mode: */
 Screen *screen_new(int is_fullscreen) {
 	Screen *out = get_object(Screen);
 	

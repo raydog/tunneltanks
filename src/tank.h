@@ -14,10 +14,9 @@ typedef struct PublicTankInfo {
 	LevelSlice *slice;
 } PublicTankInfo;
 
-typedef void (*TankController)(PublicTankInfo *, void *, Sint8 *, Sint8 *, Uint8 *) ;
+typedef void (*TankController)(PublicTankInfo *, void *, int *, int *, unsigned *) ;
 
 
-#include <SDL.h>
 #include "level.h"
 #include "screen.h"
 #include "drawbuffer.h"
@@ -27,7 +26,7 @@ typedef void (*TankController)(PublicTankInfo *, void *, Sint8 *, Sint8 *, Uint8
 Tank *tank_new(Level *lvl, PList *pl, unsigned x, unsigned y, unsigned color) ;
 void tank_destroy(Tank *t) ;
 
-Uint8 tank_get_color(Tank *t) ;
+unsigned tank_get_color(Tank *t) ;
 
 unsigned tank_get_dir(Tank *t) ;
 void tank_get_stats(Tank *t, unsigned *energy, unsigned *health) ;
@@ -46,5 +45,6 @@ void tank_trigger_explosion(Tank *t) ;
 void tank_set_controller(Tank *t, TankController func, void *data) ;
 
 int tank_is_dead(Tank *t) ;
+
 #endif /* _TANK_H_ */
 

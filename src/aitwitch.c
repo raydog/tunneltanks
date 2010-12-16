@@ -1,4 +1,3 @@
-#include <SDL.h>
 #include <math.h>
 #include "controller.h"
 #include "tank.h"
@@ -24,13 +23,13 @@ typedef enum TwitchMode {
 } TwitchMode;
 
 typedef struct TwitchPrivateData {
-	Sint8      vx, vy, s;
-	Uint8      time_to_change;
-	TwitchMode mode;
+	int      vx, vy, s;
+	unsigned time_to_change;
+	TwitchMode    mode;
 } TwitchPrivateData;
 
 
-static void do_start(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s) {
+static void do_start(PublicTankInfo *i, void *d, int *vx, int *vy, unsigned *s) {
 	TwitchPrivateData *data = d;
 	int no_up, no_down;
 	
@@ -48,7 +47,7 @@ static void do_start(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s)
 		data->mode = rand_bool(500) ? TWITCH_EXIT_UP : TWITCH_EXIT_DOWN;
 }
 
-static void do_exit_up(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s) {
+static void do_exit_up(PublicTankInfo *i, void *d, int *vx, int *vy, unsigned *s) {
 	TwitchPrivateData *data = d;
 	
 	*vx = *vy = *s = 0;
@@ -62,7 +61,7 @@ static void do_exit_up(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *
 	*vy = -1;
 }
 
-static void do_exit_down(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s) {
+static void do_exit_down(PublicTankInfo *i, void *d, int *vx, int *vy, unsigned *s) {
 	TwitchPrivateData *data = d;
 	
 	*vx = *vy = *s = 0;
@@ -76,7 +75,7 @@ static void do_exit_down(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8
 	*vy = 1;	
 }
 
-static void do_twitch(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s) {
+static void do_twitch(PublicTankInfo *i, void *d, int *vx, int *vy, unsigned *s) {
 	TwitchPrivateData *data = d;
 	
 	if(i->health < TANK_STARTING_SHIELD/2 || i->energy < TANK_STARTING_FUEL/3 ||
@@ -99,7 +98,7 @@ static void do_twitch(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s
 }
 
 /* Make a simple effort to get back to your base: */
-static void do_return(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s) {
+static void do_return(PublicTankInfo *i, void *d, int *vx, int *vy, unsigned *s) {
 	TwitchPrivateData *data = d;
 	
 	/* Seek to the closest entrance: */
@@ -126,7 +125,7 @@ static void do_return(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s
 	*vy = i->y != targety ? ((i->y < targety) * 2 - 1) : 0;
 }
 
-static void do_recharge(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s) {
+static void do_recharge(PublicTankInfo *i, void *d, int *vx, int *vy, unsigned *s) {
 	TwitchPrivateData *data = d;
 	
 	/* Check to see if we're fully charged/healed: */
@@ -141,7 +140,7 @@ static void do_recharge(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 
 	*vy = i->y ? ((i->y < 0) * 2 - 1) : 0;
 }
 
-static void twitch_controller(PublicTankInfo *i, void *d, Sint8 *vx, Sint8 *vy, Uint8 *s) {
+static void twitch_controller(PublicTankInfo *i, void *d, int *vx, int *vy, unsigned *s) {
 	TwitchPrivateData *data = d;
 	
 	switch(data->mode) {

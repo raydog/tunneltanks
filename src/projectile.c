@@ -8,7 +8,6 @@
 #include "memalloc.h"
 #include "drawbuffer.h"
 #include "tanklist.h"
-#include <SDL.h>
 
 
 struct Projectile {

@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "levelgenutil.h"
 #include "level.h"
 #include "types.h"

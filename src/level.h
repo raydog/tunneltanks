@@ -1,8 +1,6 @@
 #ifndef _LEVEL_H_
 #define _LEVEL_H_
 
-#include <SDL.h>
-
 typedef struct Level Level;
 
 #include "drawbuffer.h"
@@ -25,7 +23,6 @@ Vector level_get_spawn(Level *lvl, unsigned i);
 int level_dig_hole(Level *lvl, unsigned x, unsigned y) ;
 
 void level_draw_all(Level *lvl, DrawBuffer *b) ;
-void level_draw_box(Level *lvl, DrawBuffer *b, SDL_Rect r) ;
 void level_draw_pixel(Level *lvl, DrawBuffer *b, unsigned x, unsigned y) ;
 
 /* Will return a value indicating coll: */
@@ -34,7 +31,8 @@ typedef enum BaseCollision {
 	BASE_COLLISION_YOURS,
 	BASE_COLLISION_ENEMY
 } BaseCollision;
-BaseCollision level_check_base_collision(Level *lvl, unsigned x, unsigned y, Uint8 color) ;
+
+BaseCollision level_check_base_collision(Level *lvl, unsigned x, unsigned y, unsigned color) ;
 
 /* Dumps a decorated level into a color bmp file: */
 void level_dump_bmp(Level *lvl, char *filename) ;

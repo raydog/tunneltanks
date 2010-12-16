@@ -1,5 +1,4 @@
-#include <math.h>
-#include <SDL.h>
+#include <stdlib.h>
 #include "tanklist.h"
 #include "tank.h"
 #include "types.h"

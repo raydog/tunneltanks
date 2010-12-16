@@ -1,4 +1,4 @@
-#include <math.h>
+#include <stdlib.h>
 #include "level.h"
 #include "levelslice.h"
 #include "memalloc.h"
@@ -20,8 +20,6 @@ LevelSlice *level_slice_new(Level *lvl, Tank *t) {
 	
 	return ls;
 }
-
-
 
 
 void level_slice_free(LevelSlice *ls) {

@@ -1,10 +1,7 @@
-#include <SDL.h>
 #include "drawbuffer.h"
 #include "memalloc.h"
 
-
-/* Draw buffer deals a lot with SDL_Surface's, so it's in charge of keeping 
- * track of the colors: */
+/* Various colors for use in the game: */
 Color color_dirt_hi       = COLOR(0xc3, 0x79, 0x30);
 Color color_dirt_lo       = COLOR(0xba, 0x59, 0x04);
 Color color_rock          = COLOR(0x9a, 0x9a, 0x9a);

@@ -14,7 +14,6 @@ Screen  *screen_new(int is_fullscreen) ;
 void     screen_destroy(Screen *s) ;
 
 /* Resizing the screen: */
-/*int  screen_list_fs_resolutions(Screen *s, SDL_Rect **dest, unsigned *count) ;*/
 void screen_set_fullscreen(Screen *s, int is_fullscreen) ;
 int screen_resize(Screen *s, unsigned width, unsigned height) ;
 

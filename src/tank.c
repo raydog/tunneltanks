@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <SDL.h>
 #include "tank.h"
 #include "level.h"
 #include "memalloc.h"
@@ -15,14 +14,14 @@
 
 struct Tank {
 	unsigned x, y;
-	Sint8 vx, vy; /* Velocity... ie: is it moving now? */
-	Uint8 direction;
+	int vx, vy; /* Velocity... ie: is it moving now? */
+	unsigned direction;
 	
-	Uint8 color;
+	unsigned color;
 	
-	Uint8 bullet_timer, bullets_left, is_shooting;
+	unsigned bullet_timer, bullets_left, is_shooting;
 	
-	Uint16 health, energy;
+	unsigned health, energy;
 	
 	TankController controller;
 	void          *controller_data;
@@ -78,7 +77,7 @@ unsigned tank_get_dir(Tank *t) {
 	return t->direction;
 }
 
-Uint8 tank_get_color(Tank *t) {
+unsigned tank_get_color(Tank *t) {
 	return t->color;
 }
 

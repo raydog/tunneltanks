@@ -1,5 +1,4 @@
-#include <math.h>
-#include <SDL.h>
+#include <stdlib.h>
 #include "level.h"
 #include "memalloc.h"
 #include "random.h"
@@ -149,7 +148,7 @@ void level_draw_pixel(Level *lvl, DrawBuffer *b, unsigned x, unsigned y) {
 /* TODO: This needs to be done in a different way, as this approach will take 
  * MAX_TANKS^2 time to do all collision checks for all tanks. It should only
  * take MAX_TANKS time. */
-BaseCollision level_check_base_collision(Level *lvl, unsigned x, unsigned y, Uint8 color) {
+BaseCollision level_check_base_collision(Level *lvl, unsigned x, unsigned y, unsigned color) {
 	unsigned id;
 	
 	for(id=0; id < MAX_TANKS; id++) {
