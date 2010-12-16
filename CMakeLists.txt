@@ -11,8 +11,8 @@ find_package( SDL REQUIRED )
 include_directories( ${SDL_INCLUDE_DIR} )
 
 # Set up the compiler, and find all source files:
-set(CMAKE_C_FLAGS "-g -ansi -Wall -O3")
-file(GLOB source_files "src/*.c")
+set(CMAKE_C_FLAGS "-g -ansi -Wall -O3 -DUSE_SDL_GAMELIB")
+file(GLOB source_files "src/*.c" "src/gamelib/SDL/*.c")
 
 # Link and compile:
 link_libraries( ${SDL_LIBRARY} )

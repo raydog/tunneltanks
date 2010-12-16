@@ -6,6 +6,7 @@
 #include "tweak.h"
 #include "types.h"
 #include "drawbuffer.h"
+#include "gamelib/gamelib.h"
 
 #include "level_defn.h"
 
@@ -162,44 +163,28 @@ BaseCollision level_check_base_collision(Level *lvl, unsigned x, unsigned y, Uin
 	return BASE_COLLISION_NONE;
 }
 
-static void put_pixel_imm(SDL_Surface *s, unsigned x, unsigned y, Uint32 color) {
-	Uint8 *p = &((Uint8*)s->pixels)[ y*s->pitch + x*s->format->BytesPerPixel ];
-	memcpy( p, &color, s->format->BytesPerPixel );
-}
-
-static void put_pixel(SDL_Surface *s, unsigned x, unsigned y, Uint8 r, Uint8 g, Uint8 b) {
-	Uint32 color = SDL_MapRGB( s->format, r, g, b );
-	put_pixel_imm(s, x, y, color);
-}
 
 /* Dumps a level into a BMP file: */
 void level_dump_bmp(Level *lvl, char *filename) {
 	unsigned x, y;
-	
-	SDL_Surface *s = SDL_CreateRGBSurface(SDL_SWSURFACE,
-		lvl->width, lvl->height, 24, 0, 0, 0, 0);
-	
-	if(SDL_MUSTLOCK(s)) SDL_LockSurface(s);
+	BMPFile *f = gamelib_bmp_new(lvl->width, lvl->height);
 	
 	for(y=0; y<lvl->height; y++)
 		for(x=0; x<lvl->width; x++) {
-			char val = lvl->array[y*lvl->width + x];
-			unsigned color;
+			Color color = COLOR(0,0,0);
 			
-			switch(val) {
-				case DIRT_HI: put_pixel(s, x, y, 0xc3, 0x79, 0x30); break;
-				case DIRT_LO: put_pixel(s, x, y, 0xba, 0x59, 0x04); break;
-				case ROCK:    put_pixel(s, x, y, 0x9a, 0x9a, 0x9a); break;
-				case BLANK:   put_pixel(s, x, y, 0x00, 0x00, 0x00); break;
-				default:
-					if((color=val-BASE) < MAX_TANKS && val-BASE >= 0)
-						put_pixel_imm(s, x, y, color_tank[color][0]); break;
-			}
+			char val = lvl->array[y*lvl->width + x];
+			
+			if     (val == DIRT_HI) color = color_dirt_hi;
+			else if(val == DIRT_LO) color = color_dirt_lo;
+			else if(val == ROCK)    color = color_rock;
+			else if(val == BLANK)   color = color_blank;
+			else if(val-BASE < MAX_TANKS && val-BASE >= 0)
+				color = color_tank[val-BASE][0];
+			
+			gamelib_bmp_set_pixel(f, x, y, color);
 		}
 	
-	SDL_SaveBMP(s, filename);
-	
-	if(SDL_MUSTLOCK(s)) SDL_UnlockSurface(s);
-	
-	SDL_FreeSurface(s);
+	gamelib_bmp_finalize(f, filename);
 }
+

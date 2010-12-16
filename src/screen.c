@@ -1,4 +1,3 @@
-#include <SDL.h>
 #include <math.h>
 #include "screen.h"
 #include "tweak.h"
@@ -9,6 +8,7 @@
 #include "types.h"
 #include "tanksprites.h"
 #include "drawbuffer.h"
+#include "gamelib/gamelib.h"
 
 
 typedef enum ScreenDrawMode {
@@ -17,28 +17,28 @@ typedef enum ScreenDrawMode {
 } ScreenDrawMode;
 
 typedef struct Window {
-	SDL_Rect r;
+	Rect     r;
 	Tank    *t;
 	unsigned counter;
 	unsigned showing_static;
 } Window;
 
 typedef struct StatusBar {
-	SDL_Rect r;
+	Rect     r;
 	Tank    *t;
 	int      decreases_to_left;
 } StatusBar;
 
 typedef struct Bitmap {
-	SDL_Rect r;
+	Rect     r;
 	char    *data;
-	Uint32  *color;
+	Color   *color;
 } Bitmap;
 
 
 struct Screen {
-	SDL_Surface *s;
-	int          is_fullscreen;
+	
+	unsigned is_fullscreen;
 	
 	/* Various variables for the current resolution: */
 	unsigned width, height, xstart, ystart, pixelw, pixelh, xskips, yskips;
@@ -66,30 +66,36 @@ struct Screen {
 
 
 /* Fills a surface with a blue/black pattern: */
-static void fill_background(SDL_Surface *s) {
+static void fill_background() {
 	register unsigned x, y;
+	Rect dim;
 	
-	SDL_FillRect(s, NULL, color_bg);
-	for(y=0; y<s->h; y++) {
-		for(x=(y%2)*2; x<s->w; x+=4) {
-			Uint8 *p = &((Uint8*)s->pixels)[ y*s->pitch + x*s->format->BytesPerPixel ];
-			memcpy( p, &color_bg_dot, s->format->BytesPerPixel );
+	dim = gamelib_get_resolution();
+	
+	gamelib_draw_box(NULL, color_bg);
+	for(y=0; y<dim.h; y++) {
+		for(x=(y%2)*2; x<dim.w; x+=4) {
+			Rect r = {x, y, 1, 1};
+			gamelib_draw_box(&r, color_bg_dot);
 		}
 	}
 }
 
-void put_block_imm(SDL_Surface *s, int x, int y, unsigned w, unsigned h, Uint32 c) {
-        SDL_Rect rect = {x, y, w, h};
-        SDL_FillRect(s, &rect, c);
+/*
+void put_block(SDL_Surface *s, int x, int y, unsigned w, unsigned h, Color c) {
+	Rect rect = {x, y, w, h};
+	gamelib_draw_box(&rect, c);
 }
 
 void put_block(SDL_Surface *s, unsigned x, unsigned y, unsigned w, unsigned h, Uint8 r, Uint8 g, Uint8 b) {
-        Uint32 c = SDL_MapRGB( s->format, r, g, b );
-        put_block_imm(s, x, y, w, h, c);
+	Uint32 c = SDL_MapRGB( s->format, r, g, b );
+	put_block_imm(s, x, y, w, h, c);
 }
+*/
 
-void screen_draw_pixel(Screen *s, unsigned x, unsigned y, Uint32 color) {
+void screen_draw_pixel(Screen *s, unsigned x, unsigned y, Color color) {
 	unsigned w, h, xs, ys;
+	Rect r;
 	
 	xs = (x * s->xskips)/GAME_WIDTH;
 	ys = (y * s->yskips)/GAME_HEIGHT;
@@ -100,7 +106,8 @@ void screen_draw_pixel(Screen *s, unsigned x, unsigned y, Uint32 color) {
 	w = s->pixelw + (xs!=((x+1)*s->xskips/GAME_WIDTH));
 	h = s->pixelh + (ys!=((y+1)*s->yskips/GAME_HEIGHT));
 	
-	put_block_imm(s->s, x, y, w, h, color);
+	r = RECT(x,y,w,h);
+	gamelib_draw_box(&r, color);
 }
 
 /* Will randomly draw static to a window, based on a tank's health. Returns 1 if
@@ -137,7 +144,7 @@ static void screen_draw_static(Screen *s, Window *w) {
 	/* Develop a static thing image for the window: */
 	for(y=0; y<w->r.h; y++)
 		for(x=0; x<w->r.w; x++) {
-			Uint32 color;
+			Color color;
 
 			if(!energy) {
 				screen_draw_pixel(s, x + w->r.x, y + w->r.y, _RAND_COLOR);
@@ -178,7 +185,7 @@ static void screen_draw_window(Screen *s, Window *w) {
 	for(y=0; y < w->r.h; y++) {
 		for(x=0; x < w->r.w; x++) {
 			unsigned screenx = x + w->r.x, screeny = y + w->r.y;
-			Uint32 c = drawbuffer_get_pixel(b, x + tx - w->r.w/2, y + ty - w->r.h/2);
+			Color c = drawbuffer_get_pixel(b, x + tx - w->r.w/2, y + ty - w->r.h/2);
 			screen_draw_pixel(s, screenx, screeny, c);
 		}
 	}
@@ -192,13 +199,13 @@ static void screen_draw_window(Screen *s, Window *w) {
  *       the StatusBar structure, so they don't have to be done every frame? */
 static void screen_draw_status(Screen *s, StatusBar *b) {
 	register unsigned x, y;
-
+	
 	/* At what y value does the median divider start: */
 	unsigned mid_y = (b->r.h - 1) / 2;
 	
 	/* How many pixels high is the median divider: */
 	unsigned mid_h = (b->r.h % 2) ? 1 : 2;
-
+	
 	/* How many pixels are filled in? */
 	unsigned energy_filled, health_filled, half_energy_pixel;
 	half_energy_pixel = TANK_STARTING_FUEL/((b->r.w - STATUS_BORDER*2)*2);
@@ -225,7 +232,7 @@ static void screen_draw_status(Screen *s, StatusBar *b) {
 	/* Ok, lets draw this thing: */
 	for(y=0; y < b->r.h; y++) {
 		for(x=0; x < b->r.w; x++) {
-			Uint32 c;
+			Color c;
 
 			/* We round the corners of the status box: */
 			if((x == 0 || x == b->r.w - 1) && (y == 0 || y == b->r.h - 1))
@@ -313,6 +320,8 @@ void screen_destroy(Screen *s) {
 	free_mem(s);
 }
 
+/* TODO: Change the screen API to better match gamelib... */
+
 void screen_set_fullscreen(Screen *s, int is_fullscreen) {
 	
 	if(s->is_fullscreen == is_fullscreen) return;
@@ -328,63 +337,24 @@ void screen_set_fullscreen(Screen *s, int is_fullscreen) {
 }
 
 
-/* Will select the best resolution based on total number of pixels: */
-static SDL_Rect screen_get_best_resolution() {
-	SDL_Rect** modes;
-	unsigned i;
-	SDL_Rect out = {0,0,0,0};
-	unsigned out_score = 0;
-	
-	modes = SDL_ListModes(NULL, SDL_OPTIONS_FS);
-	if(!modes) return out;
-	
-	/* Are all resolutions available? */
-	if (modes == (SDL_Rect**)-1) {
-		out.w = SCREEN_WIDTH; out.h = SCREEN_HEIGHT;
-		return out;
-	}
-	
-	for (i=0; modes[i]; i++) {
-		if(modes[i]->w * modes[i]->h > out_score) {
-			out = *modes[i];
-			out_score = out.w * out.h;
-		}
-	}
-	
-	return out;
-}
-
 /* Returns 0 if successful, 1 if failed: */
 int screen_resize(Screen *s, unsigned width, unsigned height) {
-	unsigned pixelw, pixelh, xskips, yskips, xstart, ystart, vw, vh, a, b;
-	unsigned flags = SDL_OPTIONS;
 	
-	SDL_Surface *newsurface;
+	unsigned pixelw, pixelh, xskips, yskips, xstart, ystart, vw, vh, a, b;
+	Rect temp_rect;
 	
 	/* Make sure that we aren't scaling to something too small: */
 	if(width < GAME_WIDTH)   width = GAME_WIDTH;
 	if(height < GAME_HEIGHT) height = GAME_HEIGHT;
 	
 	/* A little extra logic for fullscreen: */
-	if(s->is_fullscreen) {
-		SDL_Rect r = screen_get_best_resolution();
-		flags = SDL_OPTIONS_FS;
-		width = r.w; height = r.h;
-	}
+	if(s->is_fullscreen) gamelib_set_fullscreen();
+	else                 gamelib_set_window    (width, height);
 	
-	/* Now, let's try to actually resize this thing: */
-	if( !(newsurface = SDL_SetVideoMode(width, height, 0, flags)) ) {
-		fprintf(stderr, "Failed to set video mode: %s\n", SDL_GetError());
-		return 1;
-	}
+	temp_rect = gamelib_get_resolution();
+	width = temp_rect.w; height = temp_rect.h;
 	
-	/* If this was fullscreen, we need to check what the new resolution is: */
-	if(s->is_fullscreen) {
-		width = newsurface->w; height = newsurface->h;
-		/* Just to make sure we don't get out-of-sync with the fullscreen stuff,
-		 * we will copy in the current fullscreen status from the surface: */
-		s->is_fullscreen = !!(newsurface->flags & SDL_FULLSCREEN);
-	}
+	s->is_fullscreen = gamelib_get_fullscreen();
 	
 	/* What is the limiting factor in our scaling? */
 	a = height * GAME_WIDTH; b = width * GAME_HEIGHT;
@@ -402,19 +372,14 @@ int screen_resize(Screen *s, unsigned width, unsigned height) {
 	pixelw = vw / GAME_WIDTH;  xskips = vw % GAME_WIDTH;
 	pixelh = vh / GAME_HEIGHT; yskips = vh % GAME_HEIGHT;
 	
-	/* Setup our colors, and draw a nice bg: */
-	drawbuffer_refresh_colors();
-	fill_background(newsurface);
+	/* Draw a nice bg: */
+	fill_background();
 	
 	/* Ok, the hard part is over. Copy in all of our data: */
-	s->s = newsurface;
 	s->width = width;   s->height = height;
 	s->xstart = xstart; s->ystart = ystart;
 	s->pixelw = pixelw; s->pixelh = pixelh;
 	s->xskips = xskips; s->yskips = yskips;
-	
-	/* Disable the mouse in fullscreen, otherwise enable: */
-	SDL_ShowCursor( s->is_fullscreen ? SDL_DISABLE : SDL_ENABLE );
 	
 	/* Redraw the game: */
 	screen_draw(s);
@@ -433,7 +398,7 @@ void screen_set_mode_map(Screen *s, Map *m) ;
 */
 
 /* Window creation should only happen in Level-drawing mode: */
-void screen_add_window(Screen *s, SDL_Rect r, Tank *t) {
+void screen_add_window(Screen *s, Rect r, Tank *t) {
 	if(s->mode != SCREEN_DRAW_LEVEL) return;
 	
 	if(s->window_count >= SCREEN_MAX_WINDOWS) return;
@@ -441,7 +406,7 @@ void screen_add_window(Screen *s, SDL_Rect r, Tank *t) {
 }
 
 /* We can add the health/energy status bars here: */
-void screen_add_status(Screen *s, SDL_Rect r, Tank *t, int decreases_to_left) {
+void screen_add_status(Screen *s, Rect r, Tank *t, int decreases_to_left) {
 	/* Verify that we're in the right mode, and that we have room: */
 	if(s->mode != SCREEN_DRAW_LEVEL) return;
 	if(s->status_count >= SCREEN_MAX_STATUS) return;
@@ -455,7 +420,7 @@ void screen_add_status(Screen *s, SDL_Rect r, Tank *t, int decreases_to_left) {
 /* We tell the graphics system about GUI graphics here: 
  * 'color' has to be an ADDRESS of a color, so it can monitor changes to the
  * value, especially if the bit depth is changed... */
-void screen_add_bitmap(Screen *s, SDL_Rect r, char *bitmap, Uint32 *color) {
+void screen_add_bitmap(Screen *s, Rect r, char *bitmap, Color *color) {
 	/* Bitmaps are only for game mode: */
 	if(s->mode != SCREEN_DRAW_LEVEL) return;
 	if(s->bitmap_count >= SCREEN_MAX_BITMAPS) return;
@@ -468,6 +433,6 @@ void screen_add_bitmap(Screen *s, SDL_Rect r, char *bitmap, Uint32 *color) {
 /* Draw the structure: */
 void screen_flip(Screen *s) {
 	screen_draw(s);
-	SDL_Flip(s->s);
+	gamelib_flip();
 }
 

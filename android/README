@@ -1,0 +1,2 @@
+This folder will contain all of the Java files needed to generate an Android
+application. The C code will be in src/gamelib/android.

@@ -1,4 +1,7 @@
 v?.?:
+ - Abstracted all SDL code into a new folder called gamelib. This gamelib can
+   have multiple implementations, making it easier to port the game to platforms
+   without SDL.
  - Made it possible to pick either single, or two-player modes.
 
 v0.4:

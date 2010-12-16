@@ -5,9 +5,6 @@
  * Most of the game engine's arbitrary limits are stored in here:
  */
 
-#define SDL_OPTIONS    (SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_RESIZABLE)
-#define SDL_OPTIONS_FS (SDL_HWSURFACE | SDL_DOUBLEBUF | SDL_FULLSCREEN)
-
 /* The default size of the window: */
 #define SCREEN_WIDTH                   640
 #define SCREEN_HEIGHT                  400

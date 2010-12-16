@@ -9,5 +9,18 @@ typedef struct Vector {
 } Vector;
 #define VECTOR(x,y) ((Vector){(x),(y)})
 
+/* A simple struct to replace direct usage of SDL_Rect: */
+typedef struct Rect {
+	int x, y;
+	unsigned w, h;
+} Rect;
+#define RECT(x,y,w,h) ((Rect){(x),(y),(w),(h)})
+
+/* A simple way to reference a color: */
+typedef struct Color {
+	unsigned char r, g, b;
+} Color;
+#define COLOR(r,g,b) ((Color){(r),(g),(b)})
+
 #endif /* _TYPES_H_ */
 

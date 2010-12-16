@@ -53,12 +53,13 @@ void init_single_player(Screen *s, TankList *tl, Level *lvl) {
 	/* Ready the tank! */
 	t = tanklist_add_tank(tl, 0, level_get_spawn(lvl, 0));
 	controller_sdl_attach(t, SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_LCTRL);
-	screen_add_window(s, (SDL_Rect){2, 2, GAME_WIDTH-4, GAME_HEIGHT-6-STATUS_HEIGHT }, t);
-	screen_add_status(s, (SDL_Rect){9, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH-12, STATUS_HEIGHT}, t, 1);
+	
+	screen_add_window(s, RECT(2, 2, GAME_WIDTH-4, GAME_HEIGHT-6-STATUS_HEIGHT), t);
+	screen_add_status(s, RECT(9, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH-12, STATUS_HEIGHT), t, 1);
 	
 	/* Add the GUI bitmaps: */
-	screen_add_bitmap(s, (SDL_Rect){3, GAME_HEIGHT - 2 - STATUS_HEIGHT    , 4, 5}, GUI_ENERGY, &color_status_energy);
-	screen_add_bitmap(s, (SDL_Rect){3, GAME_HEIGHT - 2 - STATUS_HEIGHT + 6, 4, 5}, GUI_HEALTH, &color_status_health);
+	screen_add_bitmap(s, RECT(3, GAME_HEIGHT - 2 - STATUS_HEIGHT    , 4, 5), GUI_ENERGY, &color_status_energy);
+	screen_add_bitmap(s, RECT(3, GAME_HEIGHT - 2 - STATUS_HEIGHT + 6, 4, 5), GUI_HEALTH, &color_status_health);
 	
 	/* Fill up the rest of the slots with Twitches: */
 	twitch_fill(tl, lvl, 1);
@@ -70,19 +71,19 @@ void init_double_player(Screen *s, TankList *tl, Level *lvl) {
 	/* Ready the tanks! */
 	t = tanklist_add_tank(tl, 0, level_get_spawn(lvl, 0));
 	controller_sdl_attach(t,  SDLK_a, SDLK_d, SDLK_w, SDLK_s, SDLK_LCTRL);
-	screen_add_window(s, (SDL_Rect){2, 2, GAME_WIDTH/2-3, GAME_HEIGHT-6-STATUS_HEIGHT }, t);
-	screen_add_status(s, (SDL_Rect){3, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH/2-5-2, STATUS_HEIGHT}, t, 0);
+	screen_add_window(s, RECT(2, 2, GAME_WIDTH/2-3, GAME_HEIGHT-6-STATUS_HEIGHT), t);
+	screen_add_status(s, RECT(3, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH/2-5-2, STATUS_HEIGHT), t, 0);
 	
 	/* Load up two controllable tanks: */
 	t = tanklist_add_tank(tl, 1, level_get_spawn(lvl, 1));
 	controller_sdl_attach(t,  SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SLASH);
 	/*controller_twitch_attach(t);  << Attach a twitch to a camera tank, so we can see if they're getting smarter... */
-	screen_add_window(s, (SDL_Rect){GAME_WIDTH/2+1, 2, GAME_WIDTH/2-3, GAME_HEIGHT-6-STATUS_HEIGHT }, t);
-	screen_add_status(s, (SDL_Rect){GAME_WIDTH/2+2+2, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH/2-5-3, STATUS_HEIGHT}, t, 1);
+	screen_add_window(s, RECT(GAME_WIDTH/2+1, 2, GAME_WIDTH/2-3, GAME_HEIGHT-6-STATUS_HEIGHT), t);
+	screen_add_status(s, RECT(GAME_WIDTH/2+2+2, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH/2-5-3, STATUS_HEIGHT), t, 1);
 
 	/* Add the GUI bitmaps: */
-	screen_add_bitmap(s, (SDL_Rect){GAME_WIDTH/2-2, GAME_HEIGHT - 2 - STATUS_HEIGHT    , 4, 5}, GUI_ENERGY, &color_status_energy);
-	screen_add_bitmap(s, (SDL_Rect){GAME_WIDTH/2-2, GAME_HEIGHT - 2 - STATUS_HEIGHT + 6, 4, 5}, GUI_HEALTH, &color_status_health);
+	screen_add_bitmap(s, RECT(GAME_WIDTH/2-2, GAME_HEIGHT - 2 - STATUS_HEIGHT    , 4, 5), GUI_ENERGY, &color_status_energy);
+	screen_add_bitmap(s, RECT(GAME_WIDTH/2-2, GAME_HEIGHT - 2 - STATUS_HEIGHT + 6, 4, 5), GUI_HEALTH, &color_status_health);
 	
 	/* Fill up the rest of the slots with Twitches: */
 	twitch_fill(tl, lvl, 2);
@@ -290,7 +291,7 @@ int main(int argc, char *argv[]) {
 	
 	/* If we're only writing the generated level to file, then just do that: */
 	if(outfile_name) {
-		Level *lvl = level_new(NULL, 1000, 500);
+		Level *lvl = level_new(NULL, width, height);
 	
 		/* Generate our random level: */
 		generate_level(lvl, id);
@@ -299,6 +300,7 @@ int main(int argc, char *argv[]) {
 		
 		/* Dump it out, and exit: */
 		level_dump_bmp(lvl, outfile_name);
+
 		SDL_Quit();
 		return 0;
 	}
