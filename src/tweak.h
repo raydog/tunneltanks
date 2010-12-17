@@ -24,9 +24,9 @@
 #define GAME_WIDTH                     160
 #define GAME_HEIGHT                    100
 
-/* The desired speed in frames per second. DON'T CHANGE THE SECOND ONE: */
+/* The desired speed in frames per second: */
 #define GAME_FPS                       24
-#define GAME_FPS_WAIT                  ((unsigned)(1000.0/GAME_FPS))
+#define GAME_FPS_WAIT                  ((unsigned)(1000/GAME_FPS))
 
 /* The minimum distance between two tanks in the world. If this is set too high,
  * then the level generator may start throwing exceptions: */

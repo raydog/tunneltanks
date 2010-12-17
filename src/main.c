@@ -1,7 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <time.h>
-#include <SDL.h>
 #include "screen.h"
 #include "tweak.h"
 #include "memalloc.h"
@@ -14,6 +13,7 @@
 #include "controller.h"
 #include "tanklist.h"
 #include "guisprites.h"
+#include "gamelib/gamelib.h"
 
 
 /* Keeping this here isn't the most elegant thing, but I plan on removing the
@@ -24,19 +24,6 @@ static int __DEBUG_DUMP_BITMAPS = 0;
 /* TODO: We should break some of the game-related crap into another file, so
  *       that this file doesn't balloon in size when we introduce the menus, or
  *       the overview map... */
-
-void smart_delay() {
-	unsigned cur, next;
-	
-	/* Get the current time, and the next time: */
-	cur  = SDL_GetTicks();
-	next = (cur/GAME_FPS_WAIT + 1) * GAME_FPS_WAIT;
-	
-	/* Wait if we need to: */
-	if(cur >= next) return;
-	SDL_Delay(next - cur);
-}
-
 
 void twitch_fill(TankList *tl, Level *lvl, unsigned starting_id) {
 	unsigned i;
@@ -52,7 +39,7 @@ void init_single_player(Screen *s, TankList *tl, Level *lvl) {
 	
 	/* Ready the tank! */
 	t = tanklist_add_tank(tl, 0, level_get_spawn(lvl, 0));
-	controller_sdl_attach(t, SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_LCTRL);
+	gamelib_tank_attach(t, 0, 1);
 	
 	screen_add_window(s, RECT(2, 2, GAME_WIDTH-4, GAME_HEIGHT-6-STATUS_HEIGHT), t);
 	screen_add_status(s, RECT(9, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH-12, STATUS_HEIGHT), t, 1);
@@ -70,14 +57,15 @@ void init_double_player(Screen *s, TankList *tl, Level *lvl) {
 	
 	/* Ready the tanks! */
 	t = tanklist_add_tank(tl, 0, level_get_spawn(lvl, 0));
-	controller_sdl_attach(t,  SDLK_a, SDLK_d, SDLK_w, SDLK_s, SDLK_LCTRL);
+	gamelib_tank_attach(t, 0, 2);
 	screen_add_window(s, RECT(2, 2, GAME_WIDTH/2-3, GAME_HEIGHT-6-STATUS_HEIGHT), t);
 	screen_add_status(s, RECT(3, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH/2-5-2, STATUS_HEIGHT), t, 0);
 	
 	/* Load up two controllable tanks: */
 	t = tanklist_add_tank(tl, 1, level_get_spawn(lvl, 1));
-	controller_sdl_attach(t,  SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SLASH);
+	
 	/*controller_twitch_attach(t);  << Attach a twitch to a camera tank, so we can see if they're getting smarter... */
+	gamelib_tank_attach(t, 1, 2);
 	screen_add_window(s, RECT(GAME_WIDTH/2+1, 2, GAME_WIDTH/2-3, GAME_HEIGHT-6-STATUS_HEIGHT), t);
 	screen_add_status(s, RECT(GAME_WIDTH/2+2+2, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH/2-5-3, STATUS_HEIGHT), t, 1);
 
@@ -93,9 +81,6 @@ void init_double_player(Screen *s, TankList *tl, Level *lvl) {
 /* TODO: We need a configuration structure. These args are getting out-of-hand: */
 void main_loop(Screen *s, char *id, unsigned width, unsigned height, int player_count) {
 	Level *lvl;
-	unsigned frames = 0;
-	time_t tiempo, newtiempo;
-	SDL_Event e;
 	TankList *tl;
 	DrawBuffer *b;
 	PList *pl;
@@ -124,42 +109,36 @@ void main_loop(Screen *s, char *id, unsigned width, unsigned height, int player_
 	else
 		init_double_player(s, tl, lvl);
 	
-	tiempo = time(NULL);
 	while(1) {
+		EventType temp;
 		
 		/* Handle all queued events: */
-		while( SDL_PollEvent(&e) ) {
-			switch(e.type) {
-				/* The user resized the window: */
-				case SDL_VIDEORESIZE:
-					screen_resize(s, e.resize.w, e.resize.h);
-					break;
+		while( (temp=gamelib_event_get_type()) != GAME_EVENT_NONE ) {
+			
+			/* Trying to resize the window? */
+			if(temp == GAME_EVENT_RESIZE) {
+				Rect r = gamelib_event_resize_get_size();
+				screen_resize(s, r.w, r.h);
+			
+			/* Trying to toggle fullscreen? */
+			} else if(temp == GAME_EVENT_TOGGLE_FULLSCREEN) {
+				screen_set_fullscreen(s, -1);
+			
+			/* Trying to exit? */
+			} else if(temp == GAME_EVENT_EXIT) {
+				if(__DEBUG_DUMP_BITMAPS)
+					level_dump_bmp(lvl, "debug_end.bmp");
 				
-				/* We handle a couple of keys: */
-				case SDL_KEYDOWN:
-					if(e.key.keysym.sym == SDLK_F10) {
-						/* F10 will toggle fullscreen: */
-						screen_set_fullscreen(s, -1);
-						break;
-						
-					} else if(e.key.keysym.sym != SDLK_ESCAPE) break;
-					
-					/* This way, SDLK_ESCAPE will fall through to... */
-					
-				/* Program is trying to exit: */
-				case SDL_QUIT:
-					if(__DEBUG_DUMP_BITMAPS)
-						level_dump_bmp(lvl, "debug_end.bmp");
-					
-					drawbuffer_destroy(b);
-					plist_destroy(pl);
-					tanklist_destroy(tl);
-					level_destroy(lvl);
-					return;
-				
-				/* Else, ignore: */
-				default: ;
+				drawbuffer_destroy(b);
+				plist_destroy(pl);
+				tanklist_destroy(tl);
+				level_destroy(lvl);
+				return;
+			
 			}
+			
+			/* Done with this event: */
+			gamelib_event_done();
 		}
 		
 		/* Clear everything: */
@@ -182,24 +161,12 @@ void main_loop(Screen *s, char *id, unsigned width, unsigned height, int player_
 		
 		/* Flip buffers: */
 		screen_flip(s);
-		smart_delay();
-		
-		/* FPS stuff: */
-		frames += 1;
-		newtiempo = time(NULL);
-		if(newtiempo != tiempo) {
-			char buffer[50];
-			sprintf(buffer, "%s %s (%u fps)", WINDOW_TITLE, VERSION, frames);
-			SDL_WM_SetCaption(buffer, buffer);
-			frames = 0;
-			tiempo = newtiempo;
-		}
+		gamelib_smart_wait();
 	}
 }
 
 	
 int main(int argc, char *argv[]) {
-	char text[1024];
 	Screen *s;
 	unsigned i, is_reading_level=0, is_reading_seed=0, is_reading_file=0;
 	unsigned fullscreen=0, width=1000, height=500, player_count = 2;
@@ -280,10 +247,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 	
-	if(SDL_Init(SDL_INIT_EVERYTHING)<0) {
-		printf("Failed to initialize SDL: %s\n", SDL_GetError());
-		return 1;
-	}
+	
 	
 	/* Seed if necessary: */
 	if(manual_seed) srand(seed);
@@ -301,22 +265,21 @@ int main(int argc, char *argv[]) {
 		/* Dump it out, and exit: */
 		level_dump_bmp(lvl, outfile_name);
 
-		SDL_Quit();
+		gamelib_exit();
 		return 0;
 	}
 	
-	/* New windowed screen: */
+	/* Let's get this ball rolling: */
+	gamelib_init();
 	s = screen_new(fullscreen);
 	
-	/* Dump out the current graphics driver, just for kicks: */
-	SDL_VideoDriverName( text, sizeof(text) );
-	printf("Using video driver: %s\n", text);
-	
+	/* Play the game: */
 	main_loop(s, id, width, height, player_count);
 	
+	/* Ok, we're done. Tear everything up: */
 	screen_destroy(s);
-
-	SDL_Quit();
+	gamelib_exit();
 	print_mem_stats();
+	
 	return 0;
 }

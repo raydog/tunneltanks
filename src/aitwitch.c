@@ -1,4 +1,4 @@
-#include <math.h>
+#include <stdlib.h>
 #include "controller.h"
 #include "tank.h"
 #include "memalloc.h"

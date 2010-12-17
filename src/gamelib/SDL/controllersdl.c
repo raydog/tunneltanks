@@ -1,7 +1,6 @@
 #include <SDL.h>
-#include "controller.h"
-#include "tank.h"
-#include "memalloc.h"
+#include "../../tank.h"
+#include "../../memalloc.h"
 
 /* The SDL-based keyboard controller: */
 typedef struct SDLKPrivateData {

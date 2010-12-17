@@ -9,7 +9,7 @@ typedef struct Vector {
 } Vector;
 #define VECTOR(x,y) ((Vector){(x),(y)})
 
-/* A simple struct to replace direct usage of SDL_Rect: */
+/* A simple struct for quads: */
 typedef struct Rect {
 	int x, y;
 	unsigned w, h;

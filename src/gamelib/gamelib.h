@@ -25,12 +25,11 @@ int gamelib_get_target_fps() ;     /* Usually returns 24. */
 
 
 /* This lets main() attach controllers to a tank: */
-int gamelib_tank_attach(Tank *t, int tank_num) ;
+int gamelib_tank_attach(Tank *t, int tank_num, int num_players) ;
 
 /* TODO: This will need a means for configuring the controller... */
 
 /* Allow us to handle events in a fairly platform-neutral way: */
-typedef struct Event Event;
 typedef enum EventType {
 	GAME_EVENT_NONE = 0,
 	GAME_EVENT_EXIT,
@@ -39,8 +38,9 @@ typedef enum EventType {
 } EventType;
 
 EventType gamelib_event_get_type() ;
-int  gamelib_event_is_type(Event *e, EventType type) ;
-Rect gamelib_event_resize_get_size(Event *e) ; /* Returns {0,0,0,0} on fail. */
+Rect      gamelib_event_resize_get_size() ; /* Returns {0,0,0,0} on fail. */
+void      gamelib_event_done() ;
+
 
 /* We need to be able to switch resolutions: */
 int  gamelib_set_fullscreen() ;
