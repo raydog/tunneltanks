@@ -23,6 +23,10 @@ int gamelib_get_can_fullscreen() ; /* Returns 0 or 1. */
 int gamelib_get_can_window() ;     /* Returns 0 or 1. */
 int gamelib_get_target_fps() ;     /* Usually returns 24. */
 
+/* Some platforms (Android) will be acting as the game loop, so the game loop
+ * needs to happen in the gamelib: */
+typedef int (*draw_func)(void *data);
+void gamelib_main_loop(draw_func func, void *data);
 
 /* This lets main() attach controllers to a tank: */
 int gamelib_tank_attach(Tank *t, int tank_num, int num_players) ;
@@ -41,7 +45,6 @@ EventType gamelib_event_get_type() ;
 Rect      gamelib_event_resize_get_size() ; /* Returns {0,0,0,0} on fail. */
 void      gamelib_event_done() ;
 
-
 /* We need to be able to switch resolutions: */
 int  gamelib_set_fullscreen() ;
 int  gamelib_set_window(unsigned w, unsigned h) ;
@@ -50,16 +53,12 @@ int  gamelib_get_fullscreen() ;
 
 /* We need a way to draw: */
 int  gamelib_draw_box(Rect *rect, Color c) ;
-int  gamelib_flip() ;
 
 /* Now, for a way to draw a bitmap, if the platform wants to... */
 typedef struct BMPFile BMPFile;
 BMPFile *gamelib_bmp_new      (unsigned width, unsigned height) ;
 void     gamelib_bmp_set_pixel(BMPFile *f, unsigned x, unsigned y, Color c) ;
 void     gamelib_bmp_finalize (BMPFile *f, char *filename) ;
-
-/* And finally, a way to regulate FPS: */
-int  gamelib_smart_wait();
 
 #endif /* _GAME_LIB_H_ */
 

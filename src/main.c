@@ -25,7 +25,7 @@ static int __DEBUG_DUMP_BITMAPS = 0;
  *       that this file doesn't balloon in size when we introduce the menus, or
  *       the overview map... */
 
-void twitch_fill(TankList *tl, Level *lvl, unsigned starting_id) {
+static void twitch_fill(TankList *tl, Level *lvl, unsigned starting_id) {
 	unsigned i;
 	
 	for(i=starting_id; i<MAX_TANKS; i++) {
@@ -78,91 +78,101 @@ void init_double_player(Screen *s, TankList *tl, Level *lvl) {
 }
 
 
-/* TODO: We need a configuration structure. These args are getting out-of-hand: */
-void main_loop(Screen *s, char *id, unsigned width, unsigned height, int player_count) {
-	Level *lvl;
-	TankList *tl;
+typedef struct DrawingData {
+	Level      *lvl;
+	TankList   *tl;
 	DrawBuffer *b;
-	PList *pl;
+	PList      *pl;
+	Screen     *s;
+} DrawingData;
+
+
+int update_game(void *d) {
+	DrawingData *data = (DrawingData *)d;
+	EventType temp;
+	
+	/* Handle all queued events: */
+	while( (temp=gamelib_event_get_type()) != GAME_EVENT_NONE ) {
+		
+		/* Trying to resize the window? */
+		if(temp == GAME_EVENT_RESIZE) {
+			Rect r = gamelib_event_resize_get_size();
+			screen_resize(data->s, r.w, r.h);
+		
+		/* Trying to toggle fullscreen? */
+		} else if(temp == GAME_EVENT_TOGGLE_FULLSCREEN) {
+			screen_set_fullscreen(data->s, -1);
+		
+		/* Trying to exit? */
+		} else if(temp == GAME_EVENT_EXIT) {
+			if(__DEBUG_DUMP_BITMAPS)
+				level_dump_bmp(data->lvl, "debug_end.bmp");
+			
+			drawbuffer_destroy(data->b);
+			plist_destroy(data->pl);
+			tanklist_destroy(data->tl);
+			level_destroy(data->lvl);
+			return 1;
+		
+		}
+		
+		/* Done with this event: */
+		gamelib_event_done();
+	}
+	
+	/* Clear everything: */
+	tanklist_map(data->tl, tank_clear(t, data->b));
+	plist_clear(data->pl, data->b);
+
+	/* Charge a small bit of energy for life: */
+	tanklist_map(data->tl, tank_alter_energy(t, TANK_IDLE_COST));
+
+	/* See if we need to be healed: */
+	tanklist_map(data->tl, tank_try_base_heal(t));
+	
+	/* Move everything: */
+	plist_step(data->pl, data->lvl, data->tl);
+	tanklist_map(data->tl, tank_move(t, data->tl));
+	
+	/* Draw everything: */
+	plist_draw(data->pl, data->b);
+	tanklist_map(data->tl, tank_draw(t, data->b));
+	screen_draw(data->s);
+	
+	return 0;
+}
+
+
+/* TODO: We need a configuration structure. These args are getting out-of-hand: */
+void play_game(Screen *s, char *id, unsigned width, unsigned height, int player_count) {
+	DrawingData data;
 	
 	/* Initialize most of the structures: */
-	pl  = plist_new();
-	b   = drawbuffer_new(width, height);
-	lvl = level_new(b, width, height);
-	tl  = tanklist_new(lvl, pl);
+	data.pl  = plist_new();
+	data.b   = drawbuffer_new(width, height);
+	data.lvl = level_new(data.b, width, height);
+	data.tl  = tanklist_new(data.lvl, data.pl);
+	data.s   = s;
 	
 	/* Generate our random level: */
-	generate_level(lvl, id);
-	level_decorate(lvl);
-	level_make_bases(lvl);
+	generate_level(data.lvl, id);
+	level_decorate(data.lvl);
+	level_make_bases(data.lvl);
 	if(__DEBUG_DUMP_BITMAPS)
-		level_dump_bmp(lvl, "debug_start.bmp");
+		level_dump_bmp(data.lvl, "debug_start.bmp");
 	
 	/* Start drawing! */
-	drawbuffer_set_default(b, color_rock);
-	level_draw_all(lvl, b);
-	screen_set_mode_level(s, b);
+	drawbuffer_set_default(data.b, color_rock);
+	level_draw_all(data.lvl, data.b);
+	screen_set_mode_level(data.s, data.b);
 	
 	/* Set up the players/GUI: */
 	if(player_count == 1)
-		init_single_player(s, tl, lvl);
+		init_single_player(data.s, data.tl, data.lvl);
 	else
-		init_double_player(s, tl, lvl);
+		init_double_player(data.s, data.tl, data.lvl);
 	
-	while(1) {
-		EventType temp;
-		
-		/* Handle all queued events: */
-		while( (temp=gamelib_event_get_type()) != GAME_EVENT_NONE ) {
-			
-			/* Trying to resize the window? */
-			if(temp == GAME_EVENT_RESIZE) {
-				Rect r = gamelib_event_resize_get_size();
-				screen_resize(s, r.w, r.h);
-			
-			/* Trying to toggle fullscreen? */
-			} else if(temp == GAME_EVENT_TOGGLE_FULLSCREEN) {
-				screen_set_fullscreen(s, -1);
-			
-			/* Trying to exit? */
-			} else if(temp == GAME_EVENT_EXIT) {
-				if(__DEBUG_DUMP_BITMAPS)
-					level_dump_bmp(lvl, "debug_end.bmp");
-				
-				drawbuffer_destroy(b);
-				plist_destroy(pl);
-				tanklist_destroy(tl);
-				level_destroy(lvl);
-				return;
-			
-			}
-			
-			/* Done with this event: */
-			gamelib_event_done();
-		}
-		
-		/* Clear everything: */
-		tanklist_map(tl, tank_clear(t, b));
-		plist_clear(pl, b);
-
-		/* Charge a small bit of energy for life: */
-		tanklist_map(tl, tank_alter_energy(t, TANK_IDLE_COST));
-
-		/* See if we need to be healed: */
-		tanklist_map(tl, tank_try_base_heal(t));
-		
-		/* Move everything: */
-		plist_step(pl, lvl, tl);
-		tanklist_map(tl, tank_move(t, tl));
-		
-		/* Draw everything: */
-		plist_draw(pl, b);
-		tanklist_map(tl, tank_draw(t, b));
-		
-		/* Flip buffers: */
-		screen_flip(s);
-		gamelib_smart_wait();
-	}
+	gamelib_main_loop(update_game, &data);
 }
 
 	
@@ -274,7 +284,7 @@ int main(int argc, char *argv[]) {
 	s = screen_new(fullscreen);
 	
 	/* Play the game: */
-	main_loop(s, id, width, height, player_count);
+	play_game(s, id, width, height, player_count);
 	
 	/* Ok, we're done. Tear everything up: */
 	screen_destroy(s);

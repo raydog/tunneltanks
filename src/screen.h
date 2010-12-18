@@ -36,7 +36,7 @@ void screen_add_bitmap(Screen *s, Rect r, char *bitmap, Color *color) ;
 void     screen_remove_window(Screen *s, WindowID id) ;
 */
 /* Draw the structure: */
-void screen_flip(Screen *s) ;
+void screen_draw(Screen *s) ;
 
 #endif /* _SCREEN_H_ */
 

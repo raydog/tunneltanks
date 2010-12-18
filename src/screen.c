@@ -279,7 +279,7 @@ static void screen_draw_level(Screen *s) {
 	for(i=0; i<s->bitmap_count; i++) screen_draw_bitmap(s, &s->bitmap[i]);
 }
 
-static void screen_draw(Screen *s) {	
+void screen_draw(Screen *s) {	
 	if(s->mode == SCREEN_DRAW_LEVEL) {
 		screen_draw_level(s);
 	}
@@ -415,12 +415,5 @@ void screen_add_bitmap(Screen *s, Rect r, char *bitmap, Color *color) {
 	if(!bitmap || !color) return;
 	
 	s->bitmap[ s->bitmap_count++ ] = (Bitmap) {r, bitmap, color};
-}
-
-
-/* Draw the structure: */
-void screen_flip(Screen *s) {
-	screen_draw(s);
-	gamelib_flip();
 }
 

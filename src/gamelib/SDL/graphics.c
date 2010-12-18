@@ -103,9 +103,10 @@ int gamelib_draw_box(Rect *rect, Color color) {
 	return 0;
 }
 
-/* The display is double-buffered, so double buffer it: */
+/* The display is double-buffered, so double buffer it: *
 int gamelib_flip() {
 	SDL_Flip(_DATA.s);
 	return 0;
 }
+*/
 

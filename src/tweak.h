@@ -18,7 +18,7 @@
 
 /* Window title / version string: */
 #define WINDOW_TITLE                   "TunnelTanks"
-#define VERSION                        "0.4 alpha"
+#define VERSION                        "0.5 alpha"
 
 /* The virtual resolution of the game. (IE: How many blocks tall/wide) */
 #define GAME_WIDTH                     160

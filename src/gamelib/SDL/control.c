@@ -1,5 +1,8 @@
 #include <stdio.h>
+#include <time.h>
 #include <SDL.h>
+#include "sdldata.h"
+#include "../gamelib.h"
 #include "../../tank.h"
 #include "../../tweak.h"
 
@@ -30,7 +33,7 @@ int gamelib_exit() {
 }
 
 /* Waits long enough to maintain a consistent FPS: */
-void gamelib_smart_wait() {
+static void smart_wait() {
 	unsigned cur, next;
 	
 	/* Get the current time, and the next time: */
@@ -55,6 +58,19 @@ void gamelib_handle_fps() {
 	}
 }
 */
+
+/* The main loop function will call the draw func at regular intervals, and then
+ * flip the draw buffer: */
+void gamelib_main_loop(draw_func func, void *data) {
+	while(1) {
+		
+		if(func(data))return;
+		
+		smart_wait();
+		SDL_Flip(_DATA.s);
+	}
+}
+
 
 /* All of this backend's capabilities: */
 int gamelib_get_max_players()    { return 2; }
