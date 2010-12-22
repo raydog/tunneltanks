@@ -1,5 +1,5 @@
-#include "drawbuffer.h"
-#include "memalloc.h"
+#include <drawbuffer.h>
+#include <memalloc.h>
 
 /* Various colors for use in the game: */
 Color color_dirt_hi       = COLOR(0xc3, 0x79, 0x30);

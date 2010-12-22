@@ -1,13 +1,14 @@
 #include <stdlib.h>
-#include "level.h"
-#include "memalloc.h"
-#include "random.h"
-#include "tweak.h"
-#include "types.h"
-#include "drawbuffer.h"
-#include "gamelib/gamelib.h"
 
-#include "level_defn.h"
+#include <level.h>
+#include <memalloc.h>
+#include <random.h>
+#include <tweak.h>
+#include <types.h>
+#include <drawbuffer.h>
+#include <gamelib.h>
+
+#include <level_defn.h>
 
 
 Level *level_new(DrawBuffer *b, unsigned w, unsigned h) {

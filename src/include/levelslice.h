@@ -17,8 +17,8 @@ typedef enum LevelSliceQuery {
 	LSQ_OUT_OF_BOUNDS
 } LevelSliceQuery;
 
-#include "level.h"
-#include "tank.h"
+#include <level.h>
+#include <tank.h>
 
 /* Used by tank.c to init a LevelSlice structure: */
 LevelSlice *level_slice_new(Level *lvl, Tank *t) ;

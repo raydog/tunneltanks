@@ -2,7 +2,8 @@
 #define _LEVEL_GEN_H_
 
 #include <stdio.h>
-#include "level.h"
+
+#include <level.h>
 
 /* Every level generator needs to conform to this definition: */
 typedef void (*LevelGeneratorFunc)(Level *lvl);

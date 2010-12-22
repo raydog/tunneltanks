@@ -1,14 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "levelgen.h"
-#include "levelgenutil.h"
-#include "level.h"
-#include "memalloc.h"
-#include "random.h"
-#include "queue.h"
 
-#include "level_defn.h"
+#include <levelgen.h>
+#include <levelgenutil.h>
+#include <level.h>
+#include <memalloc.h>
+#include <random.h>
+#include <queue.h>
+
+#include <level_defn.h>
+
 
 /* Configuration Constants: */
 #define BORDER    30

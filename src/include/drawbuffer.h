@@ -3,7 +3,7 @@
 
 typedef struct DrawBuffer DrawBuffer;
 
-#include "types.h"
+#include <types.h>
 
 extern Color color_dirt_hi;
 extern Color color_dirt_lo;

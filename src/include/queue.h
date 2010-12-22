@@ -3,7 +3,7 @@
 
 typedef struct Queue Queue;
 
-#include "types.h"
+#include <types.h>
 
 Queue   *queue_new(unsigned len) ;
 void     queue_destroy(Queue *q) ;

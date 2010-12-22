@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "random.h"
+
+#include <random.h>
+
 
 int rand_bool(unsigned odds) {
 	return rand_int(0,999) < odds;

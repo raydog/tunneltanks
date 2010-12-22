@@ -1,9 +1,9 @@
 #ifndef _LEVEL_DEFINITION_H_
 #define _LEVEL_DEFINITION_H_
 
-#include "tweak.h"
-#include "types.h"
-#include "drawbuffer.h"
+#include <tweak.h>
+#include <types.h>
+#include <drawbuffer.h>
 
 struct Level {
 	char       *array;

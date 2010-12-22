@@ -1,8 +1,8 @@
 #ifndef _LEVEL_GEN_UTIL_H_
 #define _LEVEL_GEN_UTIL_H_
 
-#include "level.h"
-#include "types.h"
+#include <level.h>
+#include <types.h>
 
 void     fill_all  (Level *lvl, char c) ;
 void     rough_up(Level *lvl) ;

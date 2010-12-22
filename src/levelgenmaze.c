@@ -1,10 +1,11 @@
 #include <stdio.h>
-#include "level.h"
-#include "level_defn.h"
-#include "levelgenutil.h"
-#include "memalloc.h"
-#include "queue.h"
-#include "random.h"
+
+#include <level.h>
+#include <level_defn.h>
+#include <levelgenutil.h>
+#include <memalloc.h>
+#include <queue.h>
+#include <random.h>
 
 
 /* REMEMBER: The bases are centered in cells, so these cells need to larger: */

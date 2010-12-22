@@ -1,19 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "screen.h"
-#include "tweak.h"
-#include "memalloc.h"
-#include "level.h"
-#include "levelgen.h"
-#include "random.h"
-#include "drawbuffer.h"
-#include "projectile.h"
-#include "types.h"
-#include "controller.h"
-#include "tanklist.h"
-#include "guisprites.h"
-#include "gamelib/gamelib.h"
+
+#include <screen.h>
+#include <tweak.h>
+#include <memalloc.h>
+#include <level.h>
+#include <levelgen.h>
+#include <random.h>
+#include <drawbuffer.h>
+#include <projectile.h>
+#include <types.h>
+#include <controller.h>
+#include <tanklist.h>
+#include <guisprites.h>
+#include <gamelib.h>
 
 
 /* Keeping this here isn't the most elegant thing, but I plan on removing the

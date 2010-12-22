@@ -3,8 +3,9 @@
 
 typedef struct Level Level;
 
-#include "drawbuffer.h"
-#include "types.h"
+#include <drawbuffer.h>
+#include <types.h>
+
 
 /* (Con|De)structor: */
 Level *level_new(DrawBuffer *b, unsigned w, unsigned h) ;

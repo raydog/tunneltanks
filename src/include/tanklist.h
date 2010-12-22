@@ -3,8 +3,8 @@
 
 typedef struct TankList TankList;
 
-#include "tank.h"
-#include "types.h"
+#include <tank.h>
+#include <types.h>
 
 #define tanklist_map(tl,func) do {\
 	unsigned i;\

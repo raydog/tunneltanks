@@ -1,6 +1,10 @@
 #include <SDL.h>
-#include "../../tank.h"
-#include "../../memalloc.h"
+
+#include <tank.h>
+#include <memalloc.h>
+
+#include "require_sdl.h"
+
 
 /* The SDL-based keyboard controller: */
 typedef struct SDLKPrivateData {

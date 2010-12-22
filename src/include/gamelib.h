@@ -6,8 +6,9 @@
  * abstracted so that this game can be used in non-SDL environments. (Namely:
  * Android.) */
 
-#include "../types.h"
-#include "../tank.h"
+#include <types.h>
+#include <tank.h>
+
 
 /* If the gamelib needs initialization, this'll do it: */
 int gamelib_init();

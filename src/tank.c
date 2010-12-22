@@ -1,15 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "tank.h"
-#include "level.h"
-#include "memalloc.h"
-#include "screen.h"
-#include "tweak.h"
-#include "tanksprites.h"
-#include "drawbuffer.h"
-#include "projectile.h"
-#include "random.h"
-#include "tanklist.h"
+
+#include <tank.h>
+#include <level.h>
+#include <memalloc.h>
+#include <screen.h>
+#include <tweak.h>
+#include <tanksprites.h>
+#include <drawbuffer.h>
+#include <projectile.h>
+#include <random.h>
+#include <tanklist.h>
 
 
 struct Tank {

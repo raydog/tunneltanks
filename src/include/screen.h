@@ -3,10 +3,10 @@
 
 typedef struct Screen Screen;
 
-#include "level.h"
-#include "types.h"
-#include "tank.h"
-#include "drawbuffer.h"
+#include <level.h>
+#include <types.h>
+#include <tank.h>
+#include <drawbuffer.h>
 
 
 /* (Con|De)structor: */

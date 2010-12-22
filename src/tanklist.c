@@ -1,12 +1,13 @@
 #include <stdlib.h>
-#include "tanklist.h"
-#include "tank.h"
-#include "types.h"
-#include "memalloc.h"
-#include "level.h"
-#include "projectile.h"
-#include "tweak.h"
-#include "tanksprites.h"
+
+#include <tanklist.h>
+#include <tank.h>
+#include <types.h>
+#include <memalloc.h>
+#include <level.h>
+#include <projectile.h>
+#include <tweak.h>
+#include <tanksprites.h>
 
 
 struct TankList {

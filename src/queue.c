@@ -1,7 +1,9 @@
 #include <stdlib.h>
-#include "queue.h"
-#include "types.h"
-#include "memalloc.h"
+
+#include <queue.h>
+#include <types.h>
+#include <memalloc.h>
+
 
 struct Queue {
 	Vector *array;

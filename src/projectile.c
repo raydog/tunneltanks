@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "projectile.h"
-#include "level.h"
-#include "random.h"
-#include "tank.h"
-#include "tweak.h"
-#include "memalloc.h"
-#include "drawbuffer.h"
-#include "tanklist.h"
+
+#include <projectile.h>
+#include <level.h>
+#include <random.h>
+#include <tank.h>
+#include <tweak.h>
+#include <memalloc.h>
+#include <drawbuffer.h>
+#include <tanklist.h>
 
 
 struct Projectile {

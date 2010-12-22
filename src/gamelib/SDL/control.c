@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include <time.h>
 #include <SDL.h>
+
+#include <gamelib.h>
+#include <tank.h>
+#include <tweak.h>
+
 #include "sdldata.h"
-#include "../gamelib.h"
-#include "../../tank.h"
-#include "../../tweak.h"
+#include "require_sdl.h"
+
 
 /* Only used in this function, so screw the header file: */
 void controller_sdl_attach( Tank *, SDLKey, SDLKey, SDLKey, SDLKey, SDLKey);

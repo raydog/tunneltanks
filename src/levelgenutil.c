@@ -1,10 +1,11 @@
 #include <stdlib.h>
-#include "levelgenutil.h"
-#include "level.h"
-#include "types.h"
-#include "random.h"
 
-#include "level_defn.h"
+#include <levelgenutil.h>
+#include <level.h>
+#include <types.h>
+#include <random.h>
+
+#include <level_defn.h>
 
 
 void fill_all(Level *lvl, char c) {

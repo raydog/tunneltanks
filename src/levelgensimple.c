@@ -1,12 +1,13 @@
 #include <stdio.h>
 #include <math.h>
-#include "level.h"
-#include "levelgensimple.h"
-#include "levelgenutil.h"
-#include "random.h"
-#include "types.h"
 
-#include "level_defn.h"
+#include <level.h>
+#include <levelgensimple.h>
+#include <levelgenutil.h>
+#include <random.h>
+#include <types.h>
+
+#include <level_defn.h>
 
 
 #define BORDER         80

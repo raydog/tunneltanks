@@ -7,9 +7,9 @@ typedef struct PList PList;
 typedef struct PListNode PListNode;
 
 
-#include "level.h"
-#include "tank.h"
-#include "tanklist.h"
+#include <level.h>
+#include <tank.h>
+#include <tanklist.h>
 
 PList *plist_new() ;
 void plist_destroy(PList *pl) ;

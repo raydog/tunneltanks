@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include "levelgen.h"
+
+#include <levelgen.h>
 
 
 typedef struct LevelGenerator {
@@ -14,9 +15,9 @@ typedef struct LevelGenerator {
 
 /* === All the generator headers go here: =================================== */
 
-#include "levelgentoast.h"
-#include "levelgensimple.h"
-#include "levelgenmaze.h"
+#include <levelgentoast.h>
+#include <levelgensimple.h>
+#include <levelgenmaze.h>
 
 /* Add an entry for every generator: */
 LevelGenerator GENERATOR_LIST[] =

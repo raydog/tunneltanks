@@ -1,14 +1,15 @@
 #include <stdlib.h>
-#include "screen.h"
-#include "tweak.h"
-#include "memalloc.h"
-#include "random.h"
-#include "level.h"
-#include "tank.h"
-#include "types.h"
-#include "tanksprites.h"
-#include "drawbuffer.h"
-#include "gamelib/gamelib.h"
+
+#include <screen.h>
+#include <tweak.h>
+#include <memalloc.h>
+#include <random.h>
+#include <level.h>
+#include <tank.h>
+#include <types.h>
+#include <tanksprites.h>
+#include <drawbuffer.h>
+#include <gamelib.h>
 
 
 typedef enum ScreenDrawMode {

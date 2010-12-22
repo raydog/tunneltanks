@@ -9,6 +9,7 @@ project(tunneltanks C)
 # Verify that SDL is installed:
 find_package( SDL REQUIRED )
 include_directories( ${SDL_INCLUDE_DIR} )
+include_directories( "src/include" )
 
 # Set up the compiler, and find all source files:
 set(CMAKE_C_FLAGS "-g -ansi -Wall -O3 -DUSE_SDL_GAMELIB")

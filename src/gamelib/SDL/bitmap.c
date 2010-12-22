@@ -1,9 +1,11 @@
 #include <SDL.h>
-#include "require_sdl.h"
+
+#include <gamelib.h>
+#include <types.h>
+#include <memalloc.h>
+
 #include "sdldata.h"
-#include "../gamelib.h"
-#include "../../types.h"
-#include "../../memalloc.h"
+#include "require_sdl.h"
 
 
 struct BMPFile {

@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <SDL.h>
-#include "require_sdl.h"
-#include "sdldata.h"
-#include "../../types.h"
 
+#include <types.h>
+
+#include "sdldata.h"
+#include "require_sdl.h"
 
 /* Will select the best fullscreen resolution based on pixel count: */
 static SDL_Rect screen_get_best_resolution() {

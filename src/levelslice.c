@@ -1,9 +1,10 @@
 #include <stdlib.h>
-#include "level.h"
-#include "levelslice.h"
-#include "memalloc.h"
-#include "tweak.h"
-#include "tank.h"
+
+#include <level.h>
+#include <levelslice.h>
+#include <memalloc.h>
+#include <tweak.h>
+#include <tank.h>
 
 
 struct LevelSlice {

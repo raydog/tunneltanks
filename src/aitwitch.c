@@ -1,9 +1,10 @@
 #include <stdlib.h>
-#include "controller.h"
-#include "tank.h"
-#include "memalloc.h"
-#include "random.h"
-#include "tweak.h"
+
+#include <controller.h>
+#include <tank.h>
+#include <memalloc.h>
+#include <random.h>
+#include <tweak.h>
 
 
 /* Used when seeking a base entrance: */

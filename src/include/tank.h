@@ -5,7 +5,7 @@
 typedef struct Tank Tank;
 
 /* For the controllers/AIs: */
-#include "levelslice.h"
+#include <levelslice.h>
 
 /* Put inside a structure, so we are protected from casual AI cheating: */
 typedef struct PublicTankInfo {
@@ -17,11 +17,11 @@ typedef struct PublicTankInfo {
 typedef void (*TankController)(PublicTankInfo *, void *, int *, int *, unsigned *) ;
 
 
-#include "level.h"
-#include "screen.h"
-#include "drawbuffer.h"
-#include "projectile.h"
-#include "tanklist.h"
+#include <level.h>
+#include <screen.h>
+#include <drawbuffer.h>
+#include <projectile.h>
+#include <tanklist.h>
 
 Tank *tank_new(Level *lvl, PList *pl, unsigned x, unsigned y, unsigned color) ;
 void tank_destroy(Tank *t) ;
