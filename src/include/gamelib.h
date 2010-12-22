@@ -29,7 +29,7 @@ int gamelib_get_target_fps() ;     /* Usually returns 24. */
 typedef int (*draw_func)(void *data);
 void gamelib_main_loop(draw_func func, void *data);
 
-/* This lets main() attach controllers to a tank: */
+/* This lets you attach controllers to a tank: */
 int gamelib_tank_attach(Tank *t, int tank_num, int num_players) ;
 
 /* TODO: This will need a means for configuring the controller... */
