@@ -1,6 +1,8 @@
 #ifndef _ANDROID_DATA_H_
 #define _ANDROID_DATA_H_
 
+#include <jni.h>
+
 #include <game.h>
 #include <types.h>
 
@@ -9,7 +11,12 @@ typedef struct AndroidData {
 	Rect prev;
 	
 	/* Three controller variables: */
-	int  c_x, c_y, c_shoot;
+	Vector c_touch, c_dir;
+	unsigned c_button;
+	
+	/* We store the current java environment + bitmap jobject here: */
+	JNIEnv *env;
+	jobject bitmap;
 	
 	/* The game context variable: */
 	GameData *gd;

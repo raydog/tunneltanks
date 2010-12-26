@@ -11,6 +11,7 @@ LOCAL_SRC_FILES  := $(wildcard $(LOCAL_PATH)/src/gamelib/Android/*.c)
 LOCAL_SRC_FILES  := $(LOCAL_SRC_FILES:$(LOCAL_PATH)/%=%)
 
 LOCAL_CFLAGS := -DUSE_ANDROID_GAMELIB
+#LOCAL_LDLIBS := -ljnigraphics
 
 include $(BUILD_STATIC_LIBRARY)
 
@@ -26,6 +27,7 @@ LOCAL_SRC_FILES  := $(wildcard $(LOCAL_PATH)/src/*.c)
 LOCAL_SRC_FILES  := $(LOCAL_SRC_FILES:$(LOCAL_PATH)/%=%)
 
 LOCAL_STATIC_LIBRARIES := gamelib
+LOCAL_LDLIBS := -ljnigraphics
 
 include $(BUILD_SHARED_LIBRARY)
 

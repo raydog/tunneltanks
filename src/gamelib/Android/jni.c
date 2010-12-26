@@ -1,22 +1,47 @@
+#include <stdio.h>
+#include <android/bitmap.h>
 #include <jni.h>
 
 #include <game.h>
 #include <gamelib.h>
+#include <types.h>
 
 #include "androiddata.h"
 #include "require_android.h"
 
 
-static void handle_dir(JNIEnv *env, jclass classy, jint x, jint y) {
-	_DATA.c_x = x;
-	_DATA.c_y = y;
+static void handle_touch(JNIEnv *env, jclass classy, jint x, jint y) {
+	_DATA.c_touch = VECTOR(x, y);
 }
 
-static void handle_shoot(JNIEnv *env, jclass classy, jint is_shooting) {
-	_DATA.c_shoot = !!is_shooting;
+static void handle_dir(JNIEnv *env, jclass classy, jint x, jint y) {
+	_DATA.c_dir = VECTOR(x, y);
+}
+
+static void handle_button(JNIEnv *env, jclass classy, jint is_pressing) {
+	_DATA.c_button = !!is_pressing;
 }
 
 static jint handle_step(JNIEnv *env, jclass classy, jclass bitmap) {
+	AndroidBitmapInfo info;
+	
+	/* Load up the bitmap: */
+	if( AndroidBitmap_getInfo(env, bitmap, &info)<0 ) {
+		/* Bitmap load failed! */
+		fprintf(stderr, "GetInfo() failed on the provided bitmap.\n");
+		return 1; /* Will trigger an exit. */
+	}
+	
+	/* Make sure the bitmap is the correct format: */
+	if( info.format != ANDROID_BITMAP_FORMAT_RGB_565 ) {
+		fprintf(stderr, "We only understand RGB565 format for now...\n");
+		return 1;
+	}
+	
+	_DATA.env    = env;
+	_DATA.bitmap = bitmap;
+	
+	/* Now step the simulation: */
 	return game_step(_DATA.gd);
 }
 
@@ -29,9 +54,10 @@ jint JNI_OnLoad(JavaVM *vm, void *ignored) {
 	jclass  classy;
 	
 	JNINativeMethod list[] = {
-		_METHOD("setControllerDirection", "(II)V",          handle_dir),
-		_METHOD("setControllerShooting", "(I)V",            handle_shoot),
-		_METHOD("gameStep", "(Landroid/graphics/Bitmap;)I", handle_step)
+		_METHOD("setTouch",     "(II)V",                        handle_touch),
+		_METHOD("setDirection", "(II)V",                        handle_dir),
+		_METHOD("setPress",     "(I)V",                         handle_button),
+		_METHOD("gameStep",     "(Landroid/graphics/Bitmap;)I", handle_step)
 	};
 	
 	if ((*vm)->GetEnv(vm, (void**) &env, JNI_VERSION_1_6) != JNI_OK)
