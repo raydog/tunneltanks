@@ -7,11 +7,8 @@
 #include <tweak.h>
 
 #include "sdldata.h"
+#include "controllersdl.h"
 #include "require_sdl.h"
-
-
-/* Only used in this function, so screw the header file: */
-void controller_sdl_attach( Tank *, SDLKey, SDLKey, SDLKey, SDLKey, SDLKey);
 
 
 /* Set up SDL: */
@@ -84,15 +81,36 @@ int gamelib_get_can_window()     { return 1; }
 int gamelib_get_target_fps()     { return GAME_FPS; }
 
 
-/* TODO: De-uglyify this: */
+
+/* This is kind-of a stopgap, until I make a better controller... */
+static int try_attach_joystick(Tank *t) {
+	if(SDL_NumJoysticks() == 0) return 0;
+	controller_joystick_attach(t);
+	return 1;
+}
+
+#define ONE_KEYBOARD     SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_LCTRL
+#define TWO_KEYBOARD_A   SDLK_a, SDLK_d, SDLK_w, SDLK_s, SDLK_LCTRL
+#define TWO_KEYBOARD_B   SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SLASH
+
+/* TODO: *REALLY* de-uglyify this: */
 int gamelib_tank_attach(Tank *t, int tank_num, int num_players) {
-	if(num_players == 1 && tank_num == 0)
-		controller_sdl_attach(t, SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_LCTRL);
+	if(num_players == 1 && tank_num == 0) {
+		if(!try_attach_joystick(t))
+			controller_keyboard_attach(t, ONE_KEYBOARD);
 	
-	else if(num_players == 2) {
-		if     (tank_num == 0) controller_sdl_attach(t, SDLK_a, SDLK_d, SDLK_w, SDLK_s, SDLK_LCTRL);
-		else if(tank_num == 1) controller_sdl_attach(t, SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SLASH);
-		else return 1;
+	} else if(num_players == 2) {
+		if (tank_num == 0) {
+			if(!try_attach_joystick(t))
+				controller_keyboard_attach(t, TWO_KEYBOARD_A);
+		
+		} else if(tank_num == 1) {
+			if(SDL_NumJoysticks())
+				controller_keyboard_attach(t, ONE_KEYBOARD);
+			else
+				controller_keyboard_attach(t, TWO_KEYBOARD_B);
+		
+		} else return 1;
 	}
 	
 	else return 1;
