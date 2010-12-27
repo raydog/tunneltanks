@@ -83,10 +83,10 @@ void controller_joystick_attach( Tank *t ) {
 	
 	if(data->joystick) {
 		printf("Using Joystick #0:\n");
-		printf("\tName:    %s\n", SDL_JoystickName(0));
-		printf("\tAxes:    %d\n", SDL_JoystickNumAxes(data->joystick));
-		printf("\tButtons: %d\n", SDL_JoystickNumButtons(data->joystick));
-		printf("\tBalls:   %d\n", SDL_JoystickNumBalls(data->joystick));
+		printf("  Name:    %s\n", SDL_JoystickName(0));
+		printf("  Axes:    %d\n", SDL_JoystickNumAxes(data->joystick));
+		printf("  Buttons: %d\n", SDL_JoystickNumButtons(data->joystick));
+		printf("  Balls:   %d\n", SDL_JoystickNumBalls(data->joystick));
 	
 	} else {
 		printf("Failed to open Joystick #0.\n");
