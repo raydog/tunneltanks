@@ -56,13 +56,15 @@ typedef struct JoystickPrivateData {
 static void joystick_controller(PublicTankInfo *i, void *d, int *vx, int *vy, unsigned *s) {
 	JoystickPrivateData *data = d;
 	Sint32 jx, jy;
+	Uint32 dist;
 	
 	/* Where is this joystick pointing? */
 	jx = SDL_JoystickGetAxis(data->joystick, 0);
 	jy = SDL_JoystickGetAxis(data->joystick, 1);
 	
 	/* Don't do jack if the joystick is too close to its orgin: */
-	if(jx*jx + jy*jy < CUTOFF * CUTOFF) {
+	dist = jx*jx + jy*jy;
+	if(dist < CUTOFF * CUTOFF) {
 		*vx = *vy = 0;
 		
 	/* Else, find out what direction the joystick is closest to: */
