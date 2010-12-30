@@ -12,7 +12,7 @@ typedef struct AndroidData {
 	
 	/* Three controller variables: */
 	Vector c_touch, c_dir;
-	unsigned c_button;
+	unsigned c_button, c_is_touching;
 	
 	/* We store the current java environment + bitmap jobject here: */
 	JNIEnv *env;

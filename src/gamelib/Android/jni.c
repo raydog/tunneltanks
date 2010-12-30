@@ -10,7 +10,11 @@
 #include "require_android.h"
 
 
-static void handle_touch(JNIEnv *env, jclass classy, jint x, jint y) {
+static void handle_touch(JNIEnv *env, jclass classy, jint is_touching) {
+	_DATA.c_is_touching = is_touching;
+}
+
+static void handle_move(JNIEnv *env, jclass classy, jint x, jint y) {
 	_DATA.c_touch = VECTOR(x, y);
 }
 
@@ -54,10 +58,11 @@ jint JNI_OnLoad(JavaVM *vm, void *ignored) {
 	jclass  classy;
 	
 	JNINativeMethod list[] = {
-		_METHOD("setTouch",     "(II)V",                        handle_touch),
-		_METHOD("setDirection", "(II)V",                        handle_dir),
-		_METHOD("setPress",     "(I)V",                         handle_button),
-		_METHOD("gameStep",     "(Landroid/graphics/Bitmap;)I", handle_step)
+		_METHOD("setIsTouching", "(II)V",                        handle_move),
+		_METHOD("setTouch",      "(I)V",                         handle_touch),
+		_METHOD("setDirection",  "(II)V",                        handle_dir),
+		_METHOD("setPress",      "(I)V",                         handle_button),
+		_METHOD("gameStep",      "(Landroid/graphics/Bitmap;)I", handle_step)
 	};
 	
 	if ((*vm)->GetEnv(vm, (void**) &env, JNI_VERSION_1_6) != JNI_OK)

@@ -53,6 +53,7 @@ Rect gamelib_get_resolution() ;
 int  gamelib_get_fullscreen() ;
 
 /* We need a way to draw: */
+/* TODO: Implement an API for locking/unlocking the pixel array. */
 int  gamelib_draw_box(Rect *rect, Color c) ;
 
 /* Now, for a way to draw a bitmap, if the platform wants to... */
