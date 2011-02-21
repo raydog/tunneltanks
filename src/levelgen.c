@@ -23,10 +23,11 @@ typedef struct LevelGenerator {
 /* Add an entry for every generator: */
 LevelGenerator GENERATOR_LIST[] =
 {
+	LEVEL_GENERATOR("toast",  toast_generator,  "Twisty, cavernous maps." ),
+	
 	LEVEL_GENERATOR("braid",  braid_generator,  "Maze-like maps with no dead ends."),
 	LEVEL_GENERATOR("maze",   maze_generator,   "Complicated maps with a maze surrounding the bases."),
 	LEVEL_GENERATOR("simple", simple_generator, "Simple rectangular maps with ragged sides."),
-	LEVEL_GENERATOR("toast",  toast_generator,  "Twisty, cavernous maps." ),
 	
 	/* This needs to be the last item in the list: */
 	LEVEL_GENERATOR(NULL, NULL, NULL)
