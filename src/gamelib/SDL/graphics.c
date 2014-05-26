@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <SDL.h>
 
+#include <gamelib.h>
 #include <types.h>
 
 #include "sdldata.h"
@@ -42,7 +43,7 @@ int gamelib_set_fullscreen() {
 	
 	/* Actually set the new video mode: */
 	if( !(newsurface = SDL_SetVideoMode(r.w, r.h, 0, SDL_OPTIONS_FS)) ) {
-		fprintf(stderr, "Failed to set video mode: %s\n", SDL_GetError());
+		gamelib_error("Failed to set video mode: %s\n", SDL_GetError());
 		return 1;
 	}
 	
@@ -62,7 +63,7 @@ int gamelib_set_window(unsigned w, unsigned h) {
 	
 	/* Actually set the new video mode: */
 	if( !(newsurface = SDL_SetVideoMode(w, h, 0, SDL_OPTIONS)) ) {
-		fprintf(stderr, "Failed to set video mode: %s\n", SDL_GetError());
+		gamelib_error("Failed to set video mode: %s\n", SDL_GetError());
 		return 1;
 	}
 	

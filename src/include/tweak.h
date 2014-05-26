@@ -92,7 +92,9 @@
 #define BLANK                          ' '
 #define BASE                           '0'
 
-/* Uncomment this line to keep track of various memory statistics: */
+/* Default to keeping memory stats: */
+#ifndef _MEM_STATS
 #define _MEM_STATS
+#endif
 
 #endif /* _TWEAK_H_ */

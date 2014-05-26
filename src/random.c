@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include <gamelib.h>
 #include <random.h>
 
 
@@ -34,7 +35,7 @@ void rand_seed() {
 	 * screwed... plus... it doesn't hurt. :) */
 	seed ^= time(NULL);
 	
-	printf("Using seed: %d\n", seed);
+	gamelib_print("Using seed: %d\n", seed);
 	
 	srand(seed);
 }

@@ -36,6 +36,10 @@ typedef struct Bitmap {
 	Color   *color;
 } Bitmap;
 
+typedef struct GUIController {
+	Rect r;
+} GUIController;
+
 
 struct Screen {
 	
@@ -56,6 +60,9 @@ struct Screen {
 	unsigned  bitmap_count;
 	Bitmap    bitmap[SCREEN_MAX_BITMAPS];
 	
+	/* GUI Controller shit: */
+	unsigned controller_count;
+	GUIController controller;
 	/* Variables used for drawing: */
 	ScreenDrawMode mode;
 	union {
@@ -98,6 +105,24 @@ void screen_draw_pixel(Screen *s, unsigned x, unsigned y, Color color) {
 	r = RECT(x,y,w,h);
 	gamelib_draw_box(&r, color);
 }
+
+/* These will say what virtual pixel a physical pixel resides on: */
+int  screen_map_x(Screen *s, int x) {
+	x -= s->xstart;
+	x -= x/(int)s->pixelw * (int)s->xskips/GAME_WIDTH;
+	x /= (int)s->pixelw;
+	
+	return x;
+}
+
+int  screen_map_y(Screen *s, int y) {
+	y -= s->ystart;
+	y -= y/(int)s->pixelh * (int)s->yskips/GAME_HEIGHT;
+	y /= (int)s->pixelh;
+	
+	return y;
+}
+
 
 /* Will randomly draw static to a window, based on a tank's health. Returns 1 if
  * static was drawn: */
@@ -278,6 +303,8 @@ static void screen_draw_level(Screen *s) {
 	for(i=0; i<s->window_count; i++) screen_draw_window(s, &s->window[i]);
 	for(i=0; i<s->status_count; i++) screen_draw_status(s, &s->status[i]);
 	for(i=0; i<s->bitmap_count; i++) screen_draw_bitmap(s, &s->bitmap[i]);
+	if(s->controller_count)
+		gamelib_gui_draw(s, s->controller.r);
 }
 
 void screen_draw(Screen *s) {	
@@ -294,6 +321,7 @@ Screen *screen_new(int is_fullscreen) {
 	out->is_fullscreen = is_fullscreen;
 	out->mode = SCREEN_DRAW_INVALID;
 	out->window_count = out->status_count = out->bitmap_count = 0;
+	out->controller_count = 0;
 	
 	/* Set the window size to the default one: */
 	if( screen_resize(out, SCREEN_WIDTH, SCREEN_HEIGHT) ) {
@@ -372,6 +400,7 @@ int screen_resize(Screen *s, unsigned width, unsigned height) {
 	
 	/* Redraw the game: */
 	screen_draw(s);
+	
 	return 0;
 }
 
@@ -408,7 +437,9 @@ void screen_add_status(Screen *s, Rect r, Tank *t, int decreases_to_left) {
 
 /* We tell the graphics system about GUI graphics here: 
  * 'color' has to be an ADDRESS of a color, so it can monitor changes to the
- * value, especially if the bit depth is changed... */
+ * value, especially if the bit depth is changed... 
+ * TODO: That really isn't needed anymore, since we haven't cached mapped RGB
+ *       values since the switch to gamelib... */
 void screen_add_bitmap(Screen *s, Rect r, char *bitmap, Color *color) {
 	/* Bitmaps are only for game mode: */
 	if(s->mode != SCREEN_DRAW_LEVEL) return;
@@ -416,5 +447,15 @@ void screen_add_bitmap(Screen *s, Rect r, char *bitmap, Color *color) {
 	if(!bitmap || !color) return;
 	
 	s->bitmap[ s->bitmap_count++ ] = (Bitmap) {r, bitmap, color};
+}
+
+/* We don't check to see if gamelib needs the gui controller thing in this file.
+ * That is handled in game.c: */
+void screen_add_controller(Screen *s, Rect r) {
+	if(s->mode != SCREEN_DRAW_LEVEL) return;
+	if(s->controller_count) return;
+	
+	s->controller_count = 1;
+	s->controller.r = r;
 }
 

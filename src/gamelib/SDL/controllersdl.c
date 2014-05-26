@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <SDL.h>
 
+#include <gamelib.h>
 #include <tank.h>
 #include <memalloc.h>
 
@@ -87,7 +88,7 @@ void controller_joystick_attach( Tank *t ) {
 	/* Make sure that this is even a joystick to connect to: */
 	if(SDL_NumJoysticks() == 0) {
 		/* TODO: exiting isn't all that friendly... we need a better controller API... */
-		fprintf(stderr, "No joysticks connected.\n");
+		gamelib_debug("No joysticks connected.\n");
 		exit(1);
 	}
 	
@@ -95,14 +96,14 @@ void controller_joystick_attach( Tank *t ) {
 	data->joystick = SDL_JoystickOpen(0);
 	
 	if(data->joystick) {
-		printf("Using Joystick #0:\n");
-		printf("  Name:    %s\n", SDL_JoystickName(0));
-		printf("  Axes:    %d\n", SDL_JoystickNumAxes(data->joystick));
-		printf("  Buttons: %d\n", SDL_JoystickNumButtons(data->joystick));
-		printf("  Balls:   %d\n", SDL_JoystickNumBalls(data->joystick));
+		gamelib_debug("Using Joystick #0:\n");
+		gamelib_debug("  Name:    %s\n", SDL_JoystickName(0));
+		gamelib_debug("  Axes:    %d\n", SDL_JoystickNumAxes(data->joystick));
+		gamelib_debug("  Buttons: %d\n", SDL_JoystickNumButtons(data->joystick));
+		gamelib_debug("  Balls:   %d\n", SDL_JoystickNumBalls(data->joystick));
 	
 	} else {
-		printf("Failed to open Joystick #0.\n");
+		gamelib_debug("Failed to open Joystick #0.\n");
 		exit(1);
 	}
 	

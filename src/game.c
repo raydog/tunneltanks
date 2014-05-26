@@ -15,7 +15,8 @@
 #include <gamelib.h>
 
 
-#define ERR_OUT(msg) fprintf(stderr, "PROGRAMMING ERROR: " msg "\n")
+/*#define ERR_OUT(msg) fprintf(stderr, "PROGRAMMING ERROR: " msg "\n")*/
+#define ERR_OUT(msg) gamelib_error( "PROGRAMMING ERROR: " msg )
 
 #define ASSERT_CONFIG() do { \
 	if(gd->is_active) { \
@@ -75,17 +76,27 @@ static void twitch_fill(TankList *tl, Level *lvl, unsigned starting_id) {
 /* TODO: De-uglify this crap: */
 static void init_single_player(Screen *s, TankList *tl, Level *lvl) {
 	Tank *t;
+	Rect gui;
+	unsigned gui_shift;
+	
+	/* Account for the GUI Controller: */
+	gui = gamelib_gui_get_size();
+	gui_shift = gui.w + !!gui.w * 15; /* << Shift out of way of thumb... */
+	
+	gamelib_debug("XYWH: %u %u %u %u", gui.x, gui.y, gui.w, gui.h);
 	
 	/* Ready the tank! */
 	t = tanklist_add_tank(tl, 0, level_get_spawn(lvl, 0));
 	gamelib_tank_attach(t, 0, 1);
 	
 	screen_add_window(s, RECT(2, 2, GAME_WIDTH-4, GAME_HEIGHT-6-STATUS_HEIGHT), t);
-	screen_add_status(s, RECT(9, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH-12, STATUS_HEIGHT), t, 1);
+	screen_add_status(s, RECT(9 + gui_shift, GAME_HEIGHT - 2 - STATUS_HEIGHT, GAME_WIDTH-12 - gui_shift, STATUS_HEIGHT), t, 1);
+	if(gui_shift)
+		screen_add_controller(s, RECT(3, GAME_HEIGHT - 5 - gui.h, gui.w, gui.h));
 	
 	/* Add the GUI bitmaps: */
-	screen_add_bitmap(s, RECT(3, GAME_HEIGHT - 2 - STATUS_HEIGHT    , 4, 5), GUI_ENERGY, &color_status_energy);
-	screen_add_bitmap(s, RECT(3, GAME_HEIGHT - 2 - STATUS_HEIGHT + 6, 4, 5), GUI_HEALTH, &color_status_health);
+	screen_add_bitmap(s, RECT(3 + gui_shift, GAME_HEIGHT - 2 - STATUS_HEIGHT    , 4, 5), GUI_ENERGY, &color_status_energy);
+	screen_add_bitmap(s, RECT(3 + gui_shift, GAME_HEIGHT - 2 - STATUS_HEIGHT + 6, 4, 5), GUI_HEALTH, &color_status_health);
 	
 	/* Fill up the rest of the slots with Twitches: */
 	twitch_fill(tl, lvl, 1);
@@ -125,8 +136,12 @@ GameData *game_new() {
 	/* Copy in all the default values: */
 	out->is_active = out->is_debug = 0;
 	out->data.config.gen = NULL;
+	/* The hell was I thinking?
 	out->data.config.w = GAME_WIDTH;
 	out->data.config.h = GAME_HEIGHT;
+	*/
+	out->data.config.w = 1000;
+	out->data.config.h = 500;
 	out->data.config.player_count = gamelib_get_max_players();
 	
 	if(gamelib_get_can_window())          out->data.config.is_fullscreen = 0;

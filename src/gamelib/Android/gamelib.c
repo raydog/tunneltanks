@@ -13,13 +13,19 @@
 #include "androiddata.h"
 #include "require_android.h"
 
-
 /* Game startup, and shutdown: */
 int gamelib_init() {
+	
 	_DATA.gd = game_new();
 	
-	game_set_level_gen(_DATA.gd, "maze");
+	/* Just accept the default for everything: */
 	game_finalize(_DATA.gd);
+	
+	/* Android has disappointed me, by not allowing you to specify a way to NOT
+	 * clobber seemingly unused functions in a static library. As such, we have
+	 * to resort to ugly hacks to get what we want: */
+	JNI_OnLoad(NULL, NULL);
+	JNI_OnUnload(NULL, NULL);
 	
 	return 0;
 }
@@ -43,20 +49,21 @@ void gamelib_main_loop(draw_func func, void *data) {}
 
 /* This lets you attach controllers to a tank: */
 int gamelib_tank_attach(Tank *t, int tank_num, int num_players) {
+	controller_android_attach(t);
 	return 0;
 }
 
 /* A user can't ask for a resize (so gamelib_get_can_resize() returns 0) but the
  * bitmap can be resized by Android, so we will still issue RESIZE events: */
-EventType gamelib_event_get_type() { return GAME_EVENT_NONE; }
+EventType gamelib_event_get_type() { return _DATA.next_event; }
 Rect      gamelib_event_resize_get_size() { return _DATA.prev; }
-void      gamelib_event_done() {}
+void      gamelib_event_done() { _DATA.next_event = GAME_EVENT_NONE; }
 
 
 /* We need to be able to switch resolutions: */
 int  gamelib_set_fullscreen() {return 0; }
 int  gamelib_set_window(unsigned w, unsigned h) { return 0; }
-Rect gamelib_get_resolution() { return RECT(0,0,0,0); }
+Rect gamelib_get_resolution() { return _DATA.prev; }
 int  gamelib_get_fullscreen() { return 1; }
 
 
@@ -68,57 +75,39 @@ int  gamelib_get_fullscreen() { return 1; }
  *       way, range-checking happens on a per-frame basis, and not a per-pixel
  *       basis. This will speed up SDL too... */
 int  gamelib_draw_box(Rect *rect, Color c) { 
-	register unsigned x, y;
 	Rect size;
-	void *pixels;
-	AndroidBitmapInfo info;
 	uint16_t color_data;
-	
-	/* Try to get them pixels: */
-	if(AndroidBitmap_lockPixels(_DATA.env, _DATA.bitmap, &pixels)) {
-		fprintf(stderr, "Failed to lock the bitmap's pixel array.");
-		exit(1);
-	}
-	
-	/* Let's get some info on those now-locked pixels: */
-	if(AndroidBitmap_getInfo(_DATA.env, _DATA.bitmap, &info)) {
-		fprintf(stderr, "Failed to get bitmap info before drawing.");
-		exit(1);
-	}
+	uint16_t *row, *upper, *lower;
+	register int x, step;
 	
 	/* Get the bounds of what we're drawing: */
 	if(rect) size = *rect;
 	else {
 		size.x = size.y = 0;
-		size.w = info.width; size.h = info.height;
+		size.w = _DATA.bmpW; size.h = _DATA.bmpH;
 	}
 	
-	/* Pack the color info into the color_data array: 
-	 * (This bit liberated from the Android NDK plasma example: */
-	color_data = (uint16_t)( ((c.r << 8) & 0xf800) | 
-	                         ((c.g << 2) & 0x03e0) |
-	                         ((c.b >> 3) & 0x001f) );
+	/* Pack the color info into the color_data array for RGB565: */
+	uint16_t tr = c.r, tg = c.g, tb = c.b;
+	color_data = (uint16_t)( ((tr << 8) & 0xf800) | 
+	                         ((tg << 3) & 0x07e0) |
+	                         ((tb >> 3) & 0x001f) );
 	
 	/* Scan all pixels, and set the ones we need: */
-	for(y=0; y<size.h; y++) {
-		for(x=0; x<size.w; x++) {
+	
+	
+	upper = _DATA.pixels + _DATA.bmpStride * size.y;
+	lower = _DATA.pixels + _DATA.bmpStride * (size.y+size.h);
+	step  = _DATA.bmpStride / sizeof(uint16_t);
+	
+	for(row=upper; row < lower; row += step) {
+		for(x=size.x; x<size.x+size.w; x++) {
+			
 			/* TODO: Would there be a way of doing this more like SDL, so that
 			 * we don't force the bitmap into RGB565 format, but instead let the
 			 * platform select its favorite pixel format? Think on this... */
-			uint16_t *p = &((uint16_t *)pixels)[ y*info.stride + x ];
-			memcpy( p, &color_data, 2 );
-			
-			/* In SDL, it's this. Android will be similar...
-			Uint8 *p = &((Uint8*)s->pixels)[ y*s->pitch + x*s->format->BytesPerPixel ];
-			memcpy( p, &color_bg_dot, s->format->BytesPerPixel );
-			*/
+			row[ x ] = color_data;
 		}
-	}
-	
-	/* Ok, the data is copied in. Release the pixels: */
-	if(AndroidBitmap_unlockPixels( _DATA.env, _DATA.bitmap )) {
-		fprintf(stderr, "Failed to unlock bitmap.");
-		exit(1);
 	}
 	
 	return 0;

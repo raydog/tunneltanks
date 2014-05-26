@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include <gamelib.h>
 #include <levelgen.h>
 #include <levelgenutil.h>
 #include <level.h>
@@ -70,7 +71,7 @@ static void generate_tree(Level *lvl) {
 	}
 	if(j!=MAX_TANKS) {
 		/* TODO: More robust error handling. */
-		printf("OH SHIT OH SHIT OH SHIT\n");
+		gamelib_error("OH SHUCKS OH SHUCKS OH SHUCKS\n");
 		exit(1);
 	}
 	/* Get an array of all point-point pairings: */

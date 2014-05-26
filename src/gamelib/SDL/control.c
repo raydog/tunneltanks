@@ -16,13 +16,13 @@ int gamelib_init() {
 	char text[1024];
 	
 	if( SDL_Init(SDL_INIT_EVERYTHING)<0 ) {
-		printf("Failed to initialize SDL: %s\n", SDL_GetError());
+		gamelib_error("Failed to initialize SDL: %s\n", SDL_GetError());
 		return 1;
 	}
 	
 	/* Dump out the current graphics driver, just for kicks: */
 	SDL_VideoDriverName( text, sizeof(text) );
-	printf("Using video driver: %s\n", text);
+	gamelib_print("Using video driver: %s\n", text);
 	
 	return 0;
 }

@@ -4,6 +4,9 @@ v?.?:
    without SDL.
  - Made it possible to pick either single, or two-player modes.
  - Converted to the Git VCS, for reasons.
+ - Added support for an Android port.
+ - Added a new level generator: "braid".
+ - Added support for joystick controls.
 
 v0.4:
  - Switched to a CMake/CPack-based build/packaging system, which can build

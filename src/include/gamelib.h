@@ -62,5 +62,15 @@ BMPFile *gamelib_bmp_new      (unsigned width, unsigned height) ;
 void     gamelib_bmp_set_pixel(BMPFile *f, unsigned x, unsigned y, Color c) ;
 void     gamelib_bmp_finalize (BMPFile *f, char *filename) ;
 
+/* A few outputting commands: */
+void     gamelib_print (char *str, ...) ;
+void     gamelib_debug (char *str, ...) ;
+void     gamelib_error (char *str, ...) ;
+
+/* Gamelib needs to be able to tell the outside that it needs a control GUI: */
+Rect     gamelib_gui_get_size() ;
+void     gamelib_gui_draw(Screen *s, Rect r) ;
+
+
 #endif /* _GAME_LIB_H_ */
 

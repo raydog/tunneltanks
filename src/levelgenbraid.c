@@ -225,6 +225,9 @@ void braid_generator(Level *lvl) {
 				draw_line(lvl,
 					VECTOR((x+1)*CELL_SIZE, y*CELL_SIZE), 
 					VECTOR((x+1)*CELL_SIZE, (y+1)*CELL_SIZE), 0, 1);
+			
+			if(!c.up && !c.right)
+				set_circle(lvl, (x+1)*CELL_SIZE, y*CELL_SIZE, 0);
 		}
 	}
 	

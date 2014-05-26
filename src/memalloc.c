@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <gamelib.h>
 #include <tweak.h>
 
 #ifdef _MEM_STATS
@@ -12,8 +13,8 @@
 	void *__get_mem(unsigned ammount, char *file, unsigned line) {
 		unsigned *out = (unsigned *) malloc(ammount + sizeof(unsigned));
 		if(!out) {
-			printf("%s(%u): ", file, line);
-			printf("Failed to allocate %u bytes.\n", ammount);
+			gamelib_error("%s(%u): ", file, line);
+			gamelib_error("Failed to allocate %u bytes.\n", ammount);
 			abort();
 		}
 		
@@ -35,9 +36,9 @@
 	}
 
 	void print_mem_stats() {
-		printf("\n--- MEMORY STATISTICS: -----\n");
-		printf("Memory still allocated: %u bytes\n", __TOTAL_MEMORY_ALLOCATED);
-		printf("Max memory allocated:   %u bytes\n", __MAX_MEMORY_ALLOCATED);
+		gamelib_print("\n--- MEMORY STATISTICS: -----\n");
+		gamelib_print("Memory still allocated: %u bytes\n", __TOTAL_MEMORY_ALLOCATED);
+		gamelib_print("Max memory allocated:   %u bytes\n", __MAX_MEMORY_ALLOCATED);
 	}
 
 
@@ -46,8 +47,8 @@
 	void *__get_mem(unsigned ammount, char *file, unsigned line) {
 		void *out = (void *) malloc( ammount );
 		if(!out) {
-			printf("%s(%d): ", file, line);
-			printf("Failed to allocate %u bytes.\n", ammount);
+			gamelib_error("%s(%d): ", file, line);
+			gamelib_error("Failed to allocate %u bytes.\n", ammount);
 			abort();
 		}
 		return out;

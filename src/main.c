@@ -37,26 +37,26 @@ int main(int argc, char *argv[]) {
 			is_reading_file = 0;
 		
 		} else if( !strcmp("--help", argv[i]) ) {
-			printf("%s %s\n\n", WINDOW_TITLE, VERSION);
+			gamelib_print("%s %s\n\n", WINDOW_TITLE, VERSION);
 			
-			printf("--version          Display version, and exit.\n");
-			printf("--help             Display this help message and exit.\n\n");
+			gamelib_print("--version          Display version, and exit.\n");
+			gamelib_print("--help             Display this help message and exit.\n\n");
 			
-			printf("--single           Only have one user-controlled tank.\n");
-			printf("--double           Have two user-controlled tanks. (Default)\n\n");
+			gamelib_print("--single           Only have one user-controlled tank.\n");
+			gamelib_print("--double           Have two user-controlled tanks. (Default)\n\n");
 			
-			printf("--show-levels      List all available level generators.\n");
-			printf("--level <GEN>      Use <GEN> as the level generator.\n");
-			printf("--seed <INT>       Use <INT> as the random seed.\n");
-			printf("--large            Generate a far larger level.\n");
-			printf("--fullscreen       Start in fullscreen mode.\n\n");
-			printf("--only-gen <FILE>  Will only write the level to a .bmp file, and exit.\n");
-			printf("--debug            Write before/after .bmp's to current directory.\n");
+			gamelib_print("--show-levels      List all available level generators.\n");
+			gamelib_print("--level <GEN>      Use <GEN> as the level generator.\n");
+			gamelib_print("--seed <INT>       Use <INT> as the random seed.\n");
+			gamelib_print("--large            Generate a far larger level.\n");
+			gamelib_print("--fullscreen       Start in fullscreen mode.\n\n");
+			gamelib_print("--only-gen <FILE>  Will only write the level to a .bmp file, and exit.\n");
+			gamelib_print("--debug            Write before/after .bmp's to current directory.\n");
 			
 			return 0;
 		
 		} else if( !strcmp("--version", argv[i]) ) {
-			printf("%s %s\n", WINDOW_TITLE, VERSION);
+			gamelib_print("%s %s\n", WINDOW_TITLE, VERSION);
 			return 0;
 		
 		
@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 			is_reading_file = 1;
 		
 		} else {
-			fprintf(stderr, "Unexpected argument: '%s'\n", argv[i]);
+			gamelib_error("Unexpected argument: '%s'\n", argv[i]);
 			exit(1);
 		}
 	}

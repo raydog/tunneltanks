@@ -1,0 +1,33 @@
+# This file is used to override default values used by the Ant build system.
+#
+# This file must be checked in Version Control Systems, as it is
+# integral to the build system of your project.
+
+# This file is only used by the Ant script.
+
+# You can use this to override default values such as
+#  'source.dir' for the location of your java source folder and
+#  'out.dir' for the location of your output folder.
+
+# You can also use it define how the release builds are signed by declaring
+# the following properties:
+#  'key.store' for the location of your keystore and
+#  'key.alias' for the name of the key to use.
+# The password will be asked during the build when you use the 'release' target.
+
+# This references the keystore that I use to publish into the android market.
+# Obviously, this file is not released to the public, so to compile, you can do
+# one of two things:
+#  - Use the debug keystore by commenting out the two values below.
+#  - Generate your own release keystore. I made mine using this command:
+#      
+#      keytool -genkey -keystore release_key.keystore -alias pubkey
+#              -keyalg RSA -keysize 2048 -validity 10000
+#              -dname "CN=Raymond Myers,O=poweredbytoast.com,ST=California,C=US"
+#
+#    So you would do something like that, if you wished to publish this app...
+#    Which you really wouldn't need to, since I'm publishing it for free in the
+#    Android Market already... I'm just putting this info in this file so people
+#    know HOW to publish code. :P
+key.store = release_key.keystore
+key.alias = pubkey
