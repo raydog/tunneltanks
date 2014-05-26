@@ -1,0 +1,13 @@
+CMakeCache.txt
+CMakeFiles/*
+Makefile
+android/ant.properties
+android/bin/*
+android/gen/*
+android/libs/*
+android/local.properties
+android/obj/*
+cmake_install.cmake
+pack/*.cpack
+tunneltanks
+*.bmp
