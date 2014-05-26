@@ -22,7 +22,19 @@ test_program "android"   "the Android SDK's tools directory"
 TARGET="debug"
 if [ "$1" = "--release" ] ; then
 	TARGET="release"
+	# Double check that we have the release key:
+	if [ \! -f release_key.keystore ] ; then
+		echo ""
+		echo "To do a release, you need to have a keystore as is described in:"
+		echo "./ant.properties.release"
+		exit 1
+	fi
 fi
+
+# Link in the correct debug.properties file:
+ln -sf "ant.properties.$TARGET" ant.properties
+
+	
 
 print_message "COMPILING THE C PROJECT..."
 ndk-build
