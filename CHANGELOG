@@ -3,6 +3,7 @@ v?.?:
    have multiple implementations, making it easier to port the game to platforms
    without SDL.
  - Made it possible to pick either single, or two-player modes.
+ - Converted to the Git VCS, for reasons.
 
 v0.4:
  - Switched to a CMake/CPack-based build/packaging system, which can build
